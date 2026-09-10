@@ -1,0 +1,310 @@
+{
+  "artifacts": {
+    "boundary_heatmap": "/home/u117134c/Models/Model_v6_2_scratch_rtx/predictions/circle_0173_sample_val_000174__png_9d03b78eca/boundary.png",
+    "centre_heatmap": "/home/u117134c/Models/Model_v6_2_scratch_rtx/predictions/circle_0173_sample_val_000174__png_9d03b78eca/centres.png",
+    "instance_ids": "/home/u117134c/Models/Model_v6_2_scratch_rtx/predictions/circle_0173_sample_val_000174__png_9d03b78eca/instance_ids.npy",
+    "instance_overlay": "/home/u117134c/Models/Model_v6_2_scratch_rtx/predictions/circle_0173_sample_val_000174__png_9d03b78eca/instances.png",
+    "semantic_colour": "/home/u117134c/Models/Model_v6_2_scratch_rtx/predictions/circle_0173_sample_val_000174__png_9d03b78eca/semantic_colour.png",
+    "semantic_confidence": "/home/u117134c/Models/Model_v6_2_scratch_rtx/predictions/circle_0173_sample_val_000174__png_9d03b78eca/semantic_confidence.png",
+    "semantic_ids": "/home/u117134c/Models/Model_v6_2_scratch_rtx/predictions/circle_0173_sample_val_000174__png_9d03b78eca/semantic_ids.npy"
+  },
+  "inference_ms_excluding_file_io": 776.9706870312802,
+  "instances": [
+    {
+      "area_pixels": 106173,
+      "bbox_area_pixels": 185310,
+      "bbox_aspect_ratio_width_over_height": 0.9793103448275862,
+      "bbox_fill_ratio": 0.5729480330257406,
+      "bbox_xywh": [
+        295,
+        552,
+        426,
+        435
+      ],
+      "bbox_xyxy": [
+        295,
+        552,
+        720,
+        986
+      ],
+      "center_score": 0.9919508695602417,
+      "centroid_xy": [
+        518.6352462490464,
+        761.3391540222091
+      ],
+      "class_id": 2,
+      "class_name": "Rectangle_concave",
+      "confidence": 0.9775352820047458,
+      "confidence_max": 0.9999988079071045,
+      "confidence_mean": 0.9814933468290993,
+      "confidence_min": 0.211684912443161,
+      "detection_score": 0.9775352820047458,
+      "equivalent_diameter_pixels": 367.67330904373034,
+      "instance_id": 1,
+      "semantic_confidence_max": 0.9999988079071045,
+      "semantic_confidence_mean": 0.9814933468290993,
+      "semantic_confidence_min": 0.211684912443161,
+      "semantic_confidence_std": 0.07499632489628916,
+      "touches_image_border": false
+    },
+    {
+      "area_pixels": 121986,
+      "bbox_area_pixels": 227682,
+      "bbox_aspect_ratio_width_over_height": 0.7637362637362637,
+      "bbox_fill_ratio": 0.5357735789390465,
+      "bbox_xywh": [
+        607,
+        759,
+        417,
+        546
+      ],
+      "bbox_xyxy": [
+        607,
+        759,
+        1023,
+        1304
+      ],
+      "center_score": 0.5990390777587891,
+      "centroid_xy": [
+        862.4986719787516,
+        1004.2538733953077
+      ],
+      "class_id": 2,
+      "class_name": "Rectangle_concave",
+      "confidence": 0.7363046298925723,
+      "confidence_max": 0.9999939799308777,
+      "confidence_mean": 0.9513272879822627,
+      "confidence_min": 0.3108319342136383,
+      "detection_score": 0.7363046298925723,
+      "equivalent_diameter_pixels": 394.1032848176523,
+      "instance_id": 2,
+      "semantic_confidence_max": 0.9999939799308777,
+      "semantic_confidence_mean": 0.9513272879822627,
+      "semantic_confidence_min": 0.3108319342136383,
+      "semantic_confidence_std": 0.10180907979295367,
+      "touches_image_border": true
+    },
+    {
+      "area_pixels": 24732,
+      "bbox_area_pixels": 54675,
+      "bbox_aspect_ratio_width_over_height": 1.08,
+      "bbox_fill_ratio": 0.4523456790123457,
+      "bbox_xywh": [
+        781,
+        30,
+        243,
+        225
+      ],
+      "bbox_xyxy": [
+        781,
+        30,
+        1023,
+        254
+      ],
+      "center_score": 0.05,
+      "centroid_xy": [
+        943.849344978166,
+        110.68668122270742
+      ],
+      "class_id": 2,
+      "class_name": "Rectangle_concave",
+      "confidence": 0.19856893986275773,
+      "confidence_max": 0.99959397315979,
+      "confidence_mean": 0.888027295506388,
+      "confidence_min": 0.2746054232120514,
+      "detection_score": 0.19856893986275773,
+      "equivalent_diameter_pixels": 177.4535444007531,
+      "instance_id": 3,
+      "semantic_confidence_max": 0.99959397315979,
+      "semantic_confidence_mean": 0.888027295506388,
+      "semantic_confidence_min": 0.2746054232120514,
+      "semantic_confidence_std": 0.1384284572493961,
+      "touches_image_border": true
+    },
+    {
+      "area_pixels": 7164,
+      "bbox_area_pixels": 12240,
+      "bbox_aspect_ratio_width_over_height": 1.1764705882352942,
+      "bbox_fill_ratio": 0.5852941176470589,
+      "bbox_xywh": [
+        790,
+        192,
+        120,
+        102
+      ],
+      "bbox_xyxy": [
+        790,
+        192,
+        909,
+        293
+      ],
+      "center_score": 0.05,
+      "centroid_xy": [
+        845.4786432160804,
+        242.62437185929647
+      ],
+      "class_id": 2,
+      "class_name": "Rectangle_concave",
+      "confidence": 0.1646630268405799,
+      "confidence_max": 0.944955050945282,
+      "confidence_mean": 0.7363954427928182,
+      "confidence_min": 0.4393349885940552,
+      "detection_score": 0.1646630268405799,
+      "equivalent_diameter_pixels": 95.50648197103014,
+      "instance_id": 4,
+      "semantic_confidence_max": 0.944955050945282,
+      "semantic_confidence_mean": 0.7363954427928182,
+      "semantic_confidence_min": 0.4393349885940552,
+      "semantic_confidence_std": 0.1216648749474307,
+      "touches_image_border": false
+    },
+    {
+      "area_pixels": 3294,
+      "bbox_area_pixels": 5760,
+      "bbox_aspect_ratio_width_over_height": 1.6,
+      "bbox_fill_ratio": 0.571875,
+      "bbox_xywh": [
+        781,
+        351,
+        96,
+        60
+      ],
+      "bbox_xyxy": [
+        781,
+        351,
+        876,
+        410
+      ],
+      "center_score": 0.05,
+      "centroid_xy": [
+        824.483606557377,
+        381.60655737704917
+      ],
+      "class_id": 2,
+      "class_name": "Rectangle_concave",
+      "confidence": 0.17496604092668755,
+      "confidence_max": 0.9893027544021606,
+      "confidence_mean": 0.7824719225321674,
+      "confidence_min": 0.28404927253723145,
+      "detection_score": 0.17496604092668755,
+      "equivalent_diameter_pixels": 64.76149365446743,
+      "instance_id": 5,
+      "semantic_confidence_max": 0.9893027544021606,
+      "semantic_confidence_mean": 0.7824719225321674,
+      "semantic_confidence_min": 0.28404927253723145,
+      "semantic_confidence_std": 0.1505998659059854,
+      "touches_image_border": false
+    },
+    {
+      "area_pixels": 51732,
+      "bbox_area_pixels": 93492,
+      "bbox_aspect_ratio_width_over_height": 0.9245283018867925,
+      "bbox_fill_ratio": 0.5533307662687716,
+      "bbox_xywh": [
+        730,
+        99,
+        294,
+        318
+      ],
+      "bbox_xyxy": [
+        730,
+        99,
+        1023,
+        416
+      ],
+      "center_score": 0.45065805315971375,
+      "centroid_xy": [
+        873.6330897703549,
+        269.8027139874739
+      ],
+      "class_id": 3,
+      "class_name": "circle",
+      "confidence": 0.5793531184511653,
+      "confidence_max": 0.9998716115951538,
+      "confidence_mean": 0.8630178548245274,
+      "confidence_min": 0.21138685941696167,
+      "detection_score": 0.5793531184511653,
+      "equivalent_diameter_pixels": 256.6461145784978,
+      "instance_id": 6,
+      "semantic_confidence_max": 0.9998716115951538,
+      "semantic_confidence_mean": 0.8630178548245274,
+      "semantic_confidence_min": 0.21138685941696167,
+      "semantic_confidence_std": 0.1448015375935821,
+      "touches_image_border": true
+    },
+    {
+      "area_pixels": 43749,
+      "bbox_area_pixels": 71550,
+      "bbox_aspect_ratio_width_over_height": 1.4133333333333333,
+      "bbox_fill_ratio": 0.6114465408805031,
+      "bbox_xywh": [
+        706,
+        669,
+        318,
+        225
+      ],
+      "bbox_xyxy": [
+        706,
+        669,
+        1023,
+        893
+      ],
+      "center_score": 0.05,
+      "centroid_xy": [
+        874.5914420901049,
+        767.6638551738325
+      ],
+      "class_id": 3,
+      "class_name": "circle",
+      "confidence": 0.2070013831820001,
+      "confidence_max": 0.9998610615730286,
+      "confidence_mean": 0.9257383284628679,
+      "confidence_min": 0.20684117078781128,
+      "detection_score": 0.2070013831820001,
+      "equivalent_diameter_pixels": 236.01473861311848,
+      "instance_id": 7,
+      "semantic_confidence_max": 0.9998610615730286,
+      "semantic_confidence_mean": 0.9257383284628679,
+      "semantic_confidence_min": 0.20684117078781128,
+      "semantic_confidence_std": 0.12403027685525157,
+      "touches_image_border": true
+    }
+  ],
+  "instances_per_class": {
+    "Rectangle": 0,
+    "Rectangle_concave": 5,
+    "circle": 2,
+    "circle_full": 0
+  },
+  "letterbox": {
+    "bottom": 0,
+    "left": 85,
+    "original_height": 1536,
+    "original_width": 1024,
+    "resized_height": 512,
+    "resized_width": 341,
+    "right": 86,
+    "scale": 0.3333333333333333,
+    "top": 0
+  },
+  "model": "/home/u117134c/Models/Model_v6_2_scratch_rtx/best_model_v6_2_instance.keras",
+  "model_input_shape_hwc": [
+    512,
+    512,
+    3
+  ],
+  "number_of_instances": 7,
+  "original_shape_hwc": [
+    1536,
+    1024,
+    3
+  ],
+  "output_directory": "/home/u117134c/Models/Model_v6_2_scratch_rtx/predictions/circle_0173_sample_val_000174__png_9d03b78eca",
+  "preprocessing": "shared aspect-ratio-preserving letterbox",
+  "source": "/tmp/pcb_test_viz_src/circle_0173_sample_val_000174.png",
+  "timing_ms": {
+    "combined_compute_excluding_file_io": 881.8423120537773,
+    "model_inference_and_device_transfer": 776.9706870312802,
+    "probability_conversion_and_instance_decoding": 104.87162502249703
+  }
+}

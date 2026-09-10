@@ -1,0 +1,93 @@
+{
+  "elapsed_seconds_including_io": 26.92479820700828,
+  "failures": [],
+  "images_discovered": 6,
+  "images_failed": 0,
+  "images_succeeded": 6,
+  "instances_per_class": {
+    "Rectangle": 54,
+    "Rectangle_concave": 20,
+    "circle": 20,
+    "circle_full": 0
+  },
+  "mean_inference_ms_excluding_io": 776.7123223360007,
+  "median_inference_ms_excluding_io": 765.9714744659141,
+  "model": "/home/u117134c/Models/Model_v6_2_scratch_rtx/best_model_v6_2_instance.keras",
+  "output_root": "/home/u117134c/Models/Model_v6_2_scratch_rtx/predictions",
+  "source": "/tmp/pcb_test_viz_src",
+  "successful_results": [
+    {
+      "inference_ms_excluding_file_io": 924.0091200335883,
+      "instances_per_class": {
+        "Rectangle": 0,
+        "Rectangle_concave": 3,
+        "circle": 5,
+        "circle_full": 0
+      },
+      "number_of_instances": 8,
+      "output_directory": "/home/u117134c/Models/Model_v6_2_scratch_rtx/predictions/circle_0059_sample_val_000060__png_2d44198fe9",
+      "source": "/tmp/pcb_test_viz_src/circle_0059_sample_val_000060.png"
+    },
+    {
+      "inference_ms_excluding_file_io": 713.7103429995477,
+      "instances_per_class": {
+        "Rectangle": 0,
+        "Rectangle_concave": 3,
+        "circle": 6,
+        "circle_full": 0
+      },
+      "number_of_instances": 9,
+      "output_directory": "/home/u117134c/Models/Model_v6_2_scratch_rtx/predictions/circle_0073_sample_val_000074__png_b3c1274dc1",
+      "source": "/tmp/pcb_test_viz_src/circle_0073_sample_val_000074.png"
+    },
+    {
+      "inference_ms_excluding_file_io": 776.9706870312802,
+      "instances_per_class": {
+        "Rectangle": 0,
+        "Rectangle_concave": 5,
+        "circle": 2,
+        "circle_full": 0
+      },
+      "number_of_instances": 7,
+      "output_directory": "/home/u117134c/Models/Model_v6_2_scratch_rtx/predictions/circle_0173_sample_val_000174__png_9d03b78eca",
+      "source": "/tmp/pcb_test_viz_src/circle_0173_sample_val_000174.png"
+    },
+    {
+      "inference_ms_excluding_file_io": 773.7279639695771,
+      "instances_per_class": {
+        "Rectangle": 18,
+        "Rectangle_concave": 3,
+        "circle": 3,
+        "circle_full": 0
+      },
+      "number_of_instances": 24,
+      "output_directory": "/home/u117134c/Models/Model_v6_2_scratch_rtx/predictions/Rectangle_concave_0232_sample_val_000233__png_e1aa126a0b",
+      "source": "/tmp/pcb_test_viz_src/Rectangle_concave_0232_sample_val_000233.png"
+    },
+    {
+      "inference_ms_excluding_file_io": 713.6408350197598,
+      "instances_per_class": {
+        "Rectangle": 18,
+        "Rectangle_concave": 3,
+        "circle": 2,
+        "circle_full": 0
+      },
+      "number_of_instances": 23,
+      "output_directory": "/home/u117134c/Models/Model_v6_2_scratch_rtx/predictions/Rectangle_concave_0286_sample_val_000287__png_9f695e4cf8",
+      "source": "/tmp/pcb_test_viz_src/Rectangle_concave_0286_sample_val_000287.png"
+    },
+    {
+      "inference_ms_excluding_file_io": 758.214984962251,
+      "instances_per_class": {
+        "Rectangle": 18,
+        "Rectangle_concave": 3,
+        "circle": 2,
+        "circle_full": 0
+      },
+      "number_of_instances": 23,
+      "output_directory": "/home/u117134c/Models/Model_v6_2_scratch_rtx/predictions/Rectangle_concave_0369_sample_val_000370__png_6135aa8d8b",
+      "source": "/tmp/pcb_test_viz_src/Rectangle_concave_0369_sample_val_000370.png"
+    }
+  ],
+  "total_instances": 94
+}
