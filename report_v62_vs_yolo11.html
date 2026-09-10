@@ -1,0 +1,608 @@
+<title>Model V6.2 Against YOLO11</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+  /* Palette taken from the boards themselves: copper pads on solder-mask
+     green, over a neutral carrying a faint green cast. */
+  :root {
+    --ground:   #F6F7F4;
+    --surface:  #FFFFFF;
+    --sunken:   #EFF2EE;
+    --ink:      #16211D;
+    --ink-2:    #5A6862;
+    --ink-3:    #8A968F;
+    --copper:   #A9662B;
+    --copper-w: #F0E2D3;
+    --mask:     #17533F;
+    --rule:     #DCE3DE;
+    --good:     #2E7D5C;
+    --warn:     #92701C;
+    --bad:      #A2413F;
+    --serif: "IBM Plex Serif", Georgia, "Times New Roman", serif;
+    --sans: "IBM Plex Sans Condensed", "Helvetica Neue", Arial, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:   #0E1512;
+      --surface:  #141C19;
+      --sunken:   #101815;
+      --ink:      #E4EAE6;
+      --ink-2:    #93A29B;
+      --ink-3:    #6B7973;
+      --copper:   #D2894A;
+      --copper-w: #33241a;
+      --mask:     #54AF8B;
+      --rule:     #25302B;
+      --good:     #56B189;
+      --warn:     #C6A047;
+      --bad:      #D4736F;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:   #0E1512;
+    --surface:  #141C19;
+    --sunken:   #101815;
+    --ink:      #E4EAE6;
+    --ink-2:    #93A29B;
+    --ink-3:    #6B7973;
+    --copper:   #D2894A;
+    --copper-w: #33241a;
+    --mask:     #54AF8B;
+    --rule:     #25302B;
+    --good:     #56B189;
+    --warn:     #C6A047;
+    --bad:      #D4736F;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font: 400 16px/1.62 var(--serif);
+    -webkit-font-smoothing: antialiased;
+  }
+  .sheet { max-width: 62rem; margin: 0 auto; padding: 0 2rem 5rem; }
+  p { margin: 0 0 1em; max-width: 66ch; }
+  strong { font-weight: 600; }
+  a { color: var(--copper); }
+
+  /* ---- masthead ---- */
+  header.masthead {
+    padding: 3.5rem 0 1.5rem;
+    border-bottom: 2px solid var(--ink);
+  }
+  .eyebrow {
+    font: 500 11px/1 var(--mono);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--copper);
+    margin-bottom: 1.1rem;
+  }
+  h1 {
+    font: 700 clamp(2.1rem, 5vw, 3.1rem)/1.05 var(--sans);
+    letter-spacing: -.015em;
+    margin: 0 0 .6rem;
+    text-wrap: balance;
+  }
+  .standfirst {
+    font: 400 1.14rem/1.5 var(--serif);
+    color: var(--ink-2);
+    max-width: 54ch;
+    margin: 0;
+  }
+  .byline {
+    display: flex; flex-wrap: wrap; gap: 1.6rem;
+    margin-top: 1.6rem;
+    font: 400 12px/1.4 var(--mono);
+    color: var(--ink-3);
+  }
+  .byline b { color: var(--ink-2); font-weight: 500; }
+
+  /* ---- headline figures ---- */
+  .headline {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+    border-bottom: 1px solid var(--rule);
+  }
+  .fig { padding: 1.5rem 1.4rem 1.5rem 0; }
+  .fig .k {
+    font: 500 10px/1.3 var(--mono);
+    letter-spacing: .12em; text-transform: uppercase;
+    color: var(--ink-3); margin-bottom: .5rem;
+  }
+  .fig .v {
+    font: 600 2.15rem/1 var(--sans);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -.02em;
+  }
+  .fig .v.win { color: var(--copper); }
+  .fig .n { font: 400 12px/1.4 var(--mono); color: var(--ink-2); margin-top: .45rem; }
+
+  /* ---- sections ---- */
+  section { padding-top: 3rem; }
+  h2 {
+    font: 600 1.5rem/1.2 var(--sans);
+    letter-spacing: -.01em;
+    margin: 0 0 1.1rem;
+    padding-top: .9rem;
+    border-top: 3px solid var(--copper);
+    display: flex; align-items: baseline; gap: .8rem;
+    text-wrap: balance;
+  }
+  h2 .num {
+    font: 500 .8rem/1 var(--mono);
+    color: var(--copper);
+    letter-spacing: .06em;
+  }
+  h3 {
+    font: 600 1.02rem/1.3 var(--sans);
+    margin: 2rem 0 .6rem;
+    letter-spacing: .01em;
+  }
+
+  /* ---- tables ---- */
+  .scroll { overflow-x: auto; margin: 1.4rem 0 1.6rem; }
+  table { border-collapse: collapse; width: 100%; font: 400 13.5px/1.45 var(--mono); }
+  caption {
+    caption-side: bottom; text-align: left;
+    font: 400 12px/1.5 var(--mono); color: var(--ink-3);
+    padding-top: .7rem; max-width: 70ch;
+  }
+  th, td {
+    padding: .5rem .8rem .5rem 0;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    border-bottom: 1px solid var(--rule);
+    white-space: nowrap;
+  }
+  th:first-child, td:first-child { text-align: left; }
+  thead th {
+    font-weight: 500; color: var(--ink-3);
+    font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+    border-bottom: 1.5px solid var(--ink-2);
+  }
+  tbody tr:last-child td { border-bottom: 0; }
+  td.win { color: var(--copper); font-weight: 500; }
+  td.lose { color: var(--ink-3); }
+  tr.total td { border-top: 1.5px solid var(--ink-2); font-weight: 500; }
+
+  /* ---- chart ---- */
+  figure { margin: 1.6rem 0 2rem; }
+  figure svg { width: 100%; height: auto; display: block; }
+  figcaption {
+    font: 400 12px/1.55 var(--mono); color: var(--ink-3);
+    margin-top: .8rem; max-width: 74ch;
+  }
+  .legend { display: flex; gap: 1.6rem; flex-wrap: wrap; margin-bottom: .7rem;
+    font: 500 12px/1 var(--mono); }
+  .legend span { display: inline-flex; align-items: center; gap: .45rem; }
+  .swatch { width: 15px; height: 3px; border-radius: 2px; display: inline-block; }
+
+  /* ---- callout: the one lifted element ---- */
+  .thesis {
+    background: var(--sunken);
+    border-left: 3px solid var(--copper);
+    padding: 1.3rem 1.5rem;
+    margin: 1.8rem 0;
+  }
+  .thesis p { margin: 0; font-size: 1.05rem; max-width: 62ch; }
+  .thesis p + p { margin-top: .8em; }
+
+  /* ---- caveat list: structure encodes verified vs not ---- */
+  ul.checks { list-style: none; padding: 0; margin: 1.2rem 0; }
+  ul.checks li {
+    display: grid; grid-template-columns: 5.6rem 1fr; gap: 1rem;
+    padding: .75rem 0; border-bottom: 1px solid var(--rule);
+    max-width: 74ch;
+  }
+  ul.checks li:last-child { border-bottom: 0; }
+  .tag {
+    font: 500 10px/1.7 var(--mono); letter-spacing: .09em; text-transform: uppercase;
+    text-align: center; border-radius: 2px; height: 1.7em;
+  }
+  .tag.ok   { color: var(--good); border: 1px solid var(--good); }
+  .tag.open { color: var(--warn); border: 1px solid var(--warn); }
+  .tag.risk { color: var(--bad);  border: 1px solid var(--bad); }
+
+  .arch { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: 0; margin: 1.5rem 0; border-top: 1px solid var(--rule); }
+  .arch > div { padding: 1rem 1.2rem 1.1rem 0; border-bottom: 1px solid var(--rule); }
+  .arch h4 { font: 600 .92rem/1.3 var(--sans); margin: 0 0 .35rem; }
+  .arch code { font: 400 11.5px/1.5 var(--mono); color: var(--copper); display: block;
+    margin-bottom: .4rem; }
+  .arch p { font-size: .9rem; color: var(--ink-2); margin: 0; }
+
+  footer {
+    margin-top: 3.5rem; padding-top: 1.2rem; border-top: 2px solid var(--ink);
+    font: 400 12px/1.6 var(--mono); color: var(--ink-3);
+  }
+
+  @media print {
+    /* Print always uses the light set. Without this a viewer in dark mode
+       exports a dark PDF, and whitening only the page would leave light text
+       on white paper. Tokens, not component overrides, so every rule that
+       reads a token follows. */
+    :root, :root[data-theme="dark"], :root:not([data-theme="light"]) {
+      --ground:   #FFFFFF;
+      --surface:  #FFFFFF;
+      --sunken:   #F2F4F1;
+      --ink:      #16211D;
+      --ink-2:    #4C5A54;
+      --ink-3:    #6F7B75;
+      --copper:   #8F5522;
+      --copper-w: #F0E2D3;
+      --mask:     #14503C;
+      --rule:     #CDD5CF;
+      --good:     #2A6B50;
+      --warn:     #7E5F16;
+      --bad:      #8E3735;
+    }
+    body { background: #fff; font-size: 10.5pt; }
+    .sheet { max-width: none; padding: 0 0 1cm; }
+    header.masthead { padding-top: 0; }
+    section, figure, table, .thesis, ul.checks, .arch { break-inside: avoid; }
+    h2, h3 { break-after: avoid; }
+    .headline { break-inside: avoid; }
+    @page { margin: 15mm 14mm; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="sheet">
+
+<header class="masthead">
+  <div class="eyebrow">Technical report &middot; PCB instance segmentation</div>
+  <h1>Model V6.2 Against YOLO11</h1>
+  <p class="standfirst">A purpose-built dense-mask segmenter reaches
+    <b>+0.10 mask mAP50-95</b> over a COCO-pretrained YOLO11l-seg on the same
+    boards, with 4&times; fewer parameters — and the gap sits exactly where the
+    architecture predicts it should.</p>
+  <div class="byline">
+    <span><b>Status</b> training in progress, epoch 23 of 120</span>
+    <span><b>Hardware</b> RTX PRO 1000 Blackwell, 8&nbsp;GB</span>
+    <span><b>Initialisation</b> from scratch, no pretrained weights</span>
+    <span><b>Compiled</b> 2 September 2026</span>
+  </div>
+</header>
+
+<div class="headline">
+  <div class="fig">
+    <div class="k">Mask mAP50-95</div>
+    <div class="v win">0.781</div>
+    <div class="n">YOLO11l-seg 0.683</div>
+  </div>
+  <div class="fig">
+    <div class="k">Mask mAP50</div>
+    <div class="v">0.951</div>
+    <div class="n">YOLO11l-seg 0.964</div>
+  </div>
+  <div class="fig">
+    <div class="k">Parameters</div>
+    <div class="v win">6.42<span style="font-size:.5em"> M</span></div>
+    <div class="n">YOLO11l-seg ~27.6 M</div>
+  </div>
+  <div class="fig">
+    <div class="k">Recall</div>
+    <div class="v win">0.957</div>
+    <div class="n">YOLO11l-seg 0.912</div>
+  </div>
+  <div class="fig">
+    <div class="k">Min / epoch</div>
+    <div class="v">41.8</div>
+    <div class="n">YOLO11l-seg 74.9</div>
+  </div>
+</div>
+
+<section>
+  <h2><span class="num">01</span> What the model does</h2>
+
+  <p>It finds and outlines every component pad on a printed circuit board, one
+  mask per physical object, and labels each with its shape class. Not a
+  bounding box around a pad — the actual pixel boundary of that pad,
+  separated from the pad touching it.</p>
+
+  <p>Four classes, taken from the annotation set: <b>Rectangle</b>,
+  <b>Rectangle_concave</b>, <b>circle</b> (an annulus) and <b>circle_full</b>
+  (a filled disc). Input is letterboxed to 512&nbsp;&times;&nbsp;512; instance
+  reasoning happens on a 256&nbsp;&times;&nbsp;256 grid and the class map is
+  produced at full resolution.</p>
+
+  <h3>The data it learns from</h3>
+  <div class="scroll">
+  <table>
+    <caption>Split_Data, measured from the prepared arrays. Object size is the
+      median equivalent diameter in pixels after letterboxing.</caption>
+    <thead><tr>
+      <th>Split</th><th>Images</th><th>Instances</th><th>Objects / image</th>
+      <th>Median object &oslash;</th>
+    </tr></thead>
+    <tbody>
+      <tr><td>train</td><td>4,680</td><td>151,724</td><td>32.4</td><td>21.0&ndash;35.7 px</td></tr>
+      <tr><td>val</td><td>1,048</td><td>48,388</td><td>46.2</td><td>17.5&ndash;33.3 px</td></tr>
+      <tr><td>test</td><td>432</td><td>33,472</td><td>77.5</td><td>16.0&ndash;21.9 px</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>Two properties of this dataset shape every design decision that follows.
+  <b>The objects are small</b> — a median <code>circle_full</code> is 16 pixels
+  across in the test split, so a one-pixel error around its rim costs roughly
+  a fifth of its IoU. And <b>the test split is not the training split</b>: its
+  objects are 0.48&ndash;0.76&times; the linear size of training objects and
+  sit 2.4&times; more densely per image. A model that only ever saw
+  training-scale objects would meet something different at inference.</p>
+</section>
+
+<section>
+  <h2><span class="num">02</span> How it works</h2>
+
+  <p>A shared encoder feeds two independent decoders, which feed four
+  supervised heads. There are no bounding boxes anywhere in the design; an
+  instance is a set of pixels that agree on where their centre is.</p>
+
+  <div class="arch">
+    <div>
+      <h4>Semantic head</h4>
+      <code>512 &times; 512 &times; 5</code>
+      <p>Per-pixel class. Trained with focal + Dice + Lovász-Softmax, the last
+      optimising IoU directly rather than as a proxy.</p>
+    </div>
+    <div>
+      <h4>Centre head</h4>
+      <code>256 &times; 256 &times; 4</code>
+      <p>One Gaussian peak per object, per class. CenterNet focal loss. Peaks
+      after non-maximum suppression become instance seeds.</p>
+    </div>
+    <div>
+      <h4>Offset head</h4>
+      <code>256 &times; 256 &times; 2</code>
+      <p>Each foreground pixel predicts the vector to its own object's centre.
+      Pixels are then assigned to the seed they point at.</p>
+    </div>
+    <div>
+      <h4>Boundary head</h4>
+      <code>512 &times; 512 &times; 1</code>
+      <p>Supervised on instance-ID transitions. Splits candidates that the
+      centre grouping merged, and sharpens the class map's edges.</p>
+    </div>
+  </div>
+
+  <p>The encoder borrows YOLO's C3k2/SPPF blocks, the neck is a weighted
+  bidirectional feature pyramid, and the instance grouping is the centre +
+  offset scheme from Panoptic-DeepLab. 6,417,683 parameters across 464 layers,
+  42.75&nbsp;GMAC per image.</p>
+
+  <h3>Augmentation matched to the measured domain gap</h3>
+  <p>Because the test split is smaller and denser than the training split, the
+  training pipeline manufactures that shift: a 95-mode rotation and photometric
+  cycle, all eight dihedral transforms (every class here is symmetric under
+  them, so they are exactly label-preserving), a zoom-out ladder from 5% to 50%
+  in 5% steps padded with black, and copy-paste augmentation that lifts
+  <code>Rectangle_concave</code> from 0.47% of objects to roughly a quarter of
+  the objects the model sees.</p>
+</section>
+
+<section>
+  <h2><span class="num">03</span> Where it stands against YOLO11l-seg</h2>
+
+  <p>A YOLO11l-seg baseline was trained on these boards at the same
+  512&nbsp;px input: COCO-pretrained, 23 epochs, 28.7 hours. Model V6.2 is
+  currently at epoch 23 of 120, from random initialisation. Both curves below
+  are mask mAP averaged over IoU 0.50 to 0.95 in steps of 0.05.</p>
+
+  <figure>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--copper)"></i>Model V6.2 &mdash; mAP50-95</span>
+      <span><i class="swatch" style="background:var(--mask)"></i>YOLO11l-seg &mdash; mAP50-95</span>
+      <span><i class="swatch" style="background:var(--ink-3);height:2px;opacity:.55"></i>same colours, dashed &mdash; mAP50</span>
+    </div>
+    <svg viewBox="0 0 800 300" role="img"
+         aria-label="Mask average precision against training epoch. Model V6.2 rises from 0.004 at epoch 1 to 0.781 at epoch 20. YOLO11l-seg rises from 0.563 to 0.683 over 23 epochs. V6.2 overtakes YOLO around epoch 8 and leads by about 0.10 thereafter.">
+      <g stroke="var(--rule)" stroke-width="1">
+        <line x1="56" y1="266" x2="782" y2="266"/>
+        <line x1="56" y1="204" x2="782" y2="204"/>
+        <line x1="56" y1="142" x2="782" y2="142"/>
+        <line x1="56" y1="80"  x2="782" y2="80"/>
+        <line x1="56" y1="18"  x2="782" y2="18"/>
+      </g>
+      <g font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--ink-3)">
+        <text x="48" y="269" text-anchor="end">0.00</text>
+        <text x="48" y="207" text-anchor="end">0.25</text>
+        <text x="48" y="145" text-anchor="end">0.50</text>
+        <text x="48" y="83"  text-anchor="end">0.75</text>
+        <text x="48" y="21"  text-anchor="end">1.00</text>
+        <text x="56"  y="284" text-anchor="middle">1</text>
+        <text x="184" y="284" text-anchor="middle">5</text>
+        <text x="345" y="284" text-anchor="middle">10</text>
+        <text x="505" y="284" text-anchor="middle">15</text>
+        <text x="666" y="284" text-anchor="middle">20</text>
+        <text x="762" y="284" text-anchor="middle">23</text>
+        <text x="419" y="298" text-anchor="middle" fill="var(--ink-2)">training epoch</text>
+      </g>
+      <polyline fill="none" stroke="var(--mask)" stroke-width="1.3" stroke-dasharray="4 3"
+        opacity=".55"
+        points="56.0,50.6 184.4,52.3 344.8,32.5 505.3,32.7 665.7,29.3 762.0,26.9"/>
+      <polyline fill="none" stroke="var(--copper)" stroke-width="1.3" stroke-dasharray="4 3"
+        opacity=".55"
+        points="56.0,262.7 184.4,52.8 344.8,34.0 505.3,30.3 665.7,30.1"/>
+      <polyline fill="none" stroke="var(--mask)" stroke-width="2.2" stroke-linejoin="round"
+        points="56.0,126.5 88.1,123.1 120.2,125.9 152.3,115.4 184.4,120.8 216.5,128.8 248.5,115.5 280.6,118.5 312.7,112.9 344.8,102.5 376.9,107.3 409.0,104.6 441.1,104.6 473.2,99.8 505.3,105.2 537.4,97.2 569.5,98.8 601.5,95.4 633.6,99.3 665.7,97.5 697.8,97.9 729.9,94.1 762.0,96.7"/>
+      <polyline fill="none" stroke="var(--copper)" stroke-width="2.6" stroke-linejoin="round"
+        points="56.0,264.9 184.4,123.4 344.8,85.4 505.3,76.1 665.7,72.2"/>
+      <circle cx="665.7" cy="72.2" r="4" fill="var(--copper)"/>
+      <circle cx="762.0" cy="96.7" r="4" fill="var(--mask)"/>
+      <g font-family="IBM Plex Mono, monospace" font-size="11" font-weight="500">
+        <text x="655" y="62" text-anchor="end" fill="var(--copper)">0.781</text>
+        <text x="752" y="112" text-anchor="end" fill="var(--mask)">0.683</text>
+      </g>
+    </svg>
+    <figcaption>Solid lines are mAP50-95, the metric that rewards mask
+      precision. Dashed lines are mAP50, which only asks whether the object was
+      found. The two dashed lines nearly coincide; the two solid lines do
+      not. That separation is the whole finding.</figcaption>
+  </figure>
+
+  <div class="scroll">
+  <table>
+    <caption>Mask metrics at each model's latest evaluation. V6.2 at epoch 20
+      (256 validation images); YOLO11l-seg at epoch 23 (its full validation
+      split, Ultralytics' own metric implementation).</caption>
+    <thead><tr>
+      <th>Metric</th><th>Model V6.2</th><th>YOLO11l-seg</th><th>Difference</th>
+    </tr></thead>
+    <tbody>
+      <tr><td>mask mAP50-95</td><td class="win">0.7814</td><td>0.6827</td><td class="win">+0.0987</td></tr>
+      <tr><td>mask mAP50</td><td class="lose">0.9513</td><td>0.9643</td><td class="lose">&minus;0.0130</td></tr>
+      <tr><td>mask precision</td><td class="lose">0.8820</td><td>0.9543</td><td class="lose">&minus;0.0723</td></tr>
+      <tr><td>mask recall</td><td class="win">0.9567</td><td>0.9120</td><td class="win">+0.0447</td></tr>
+      <tr class="total"><td>parameters</td><td class="win">6,417,683</td><td>~27,600,000</td><td class="win">4.3&times; fewer</td></tr>
+      <tr><td>minutes / epoch</td><td class="win">41.8</td><td>74.9</td><td class="win">1.8&times; faster</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="thesis">
+    <p><b>The two models fail differently, and that is the point.</b>
+    They agree almost exactly on whether an object is there — mAP50 differs by
+    0.013. They disagree by 0.099 on how well the mask fits once you demand
+    IoU above 0.5.</p>
+    <p>YOLO finds the pad. V6.2 draws it.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">04</span> Why the gap sits at high IoU</h2>
+
+  <p>Three structural differences explain it, and all three are properties of
+  the architectures rather than of how long either was trained.</p>
+
+  <h3>Prototype masks are low-rank; dense masks are not</h3>
+  <p>YOLO-seg predicts a small basis of prototype masks at reduced resolution
+  and reconstructs each instance as a weighted combination of them. That is
+  efficient and works well on large, distinct objects. Every mask it can
+  express, though, lives in that low-dimensional span. On a 16-pixel disc, the
+  rim is most of the object, and the rim is what the basis cannot spend
+  capacity on. V6.2 predicts a class per pixel at full 512&nbsp;px resolution;
+  nothing constrains one mask to resemble a blend of others.</p>
+
+  <h3>A mask cropped to a box inherits the box's error</h3>
+  <p>YOLO-seg multiplies its mask by the detected bounding box. A box that is
+  slightly loose admits background; slightly tight, and it shaves the object.
+  At IoU 0.5 that rarely changes the verdict. At IoU 0.85 it decides it. V6.2
+  produces no boxes at all — an instance is a connected set of pixels whose
+  predicted offsets agree on a centre — so there is no box error to inherit.</p>
+
+  <h3>Axis-aligned boxes are a poor description of a rotated pad</h3>
+  <p>These pads sit at arbitrary angles; the training cycle alone sweeps 45
+  distinct rotations. An axis-aligned box around a diagonal elongated pad is
+  mostly background, which weakens both the mask crop and the non-maximum
+  suppression that decides which detections survive. Dense per-pixel grouping
+  has no orientation preference to lose.</p>
+
+  <p>A fourth difference is supervision rather than structure: V6.2 has an
+  explicit boundary head trained on instance-ID transitions. Nothing in
+  YOLO-seg is supervised on where one object stops and the next begins, and at
+  77 objects per test image, plenty of them touch.</p>
+
+  <h3>The evidence within V6.2 agrees</h3>
+  <div class="scroll">
+  <table>
+    <caption>Per-class average precision, Model V6.2 at epoch 20. The classes
+      are ordered by object size.</caption>
+    <thead><tr>
+      <th>Class</th><th>Share of objects</th><th>AP50</th><th>AP50-95</th><th>Gap</th>
+    </tr></thead>
+    <tbody>
+      <tr><td>Rectangle_concave <span style="color:var(--ink-3)">(largest)</span></td><td>0.7%</td><td>0.968</td><td class="win">0.833</td><td>0.135</td></tr>
+      <tr><td>Rectangle</td><td>25%</td><td>0.961</td><td>0.745</td><td>0.216</td></tr>
+      <tr><td>circle</td><td>14%</td><td>0.950</td><td>0.723</td><td>0.227</td></tr>
+      <tr><td>circle_full <span style="color:var(--ink-3)">(smallest)</span></td><td>60%</td><td>0.863</td><td class="lose">0.612</td><td>0.251</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>The AP50-95 ordering is the size ordering, precisely inverted. The
+  rarest class, <code>Rectangle_concave</code> — 680 training polygons — scores
+  <b>best</b> at high IoU because it is large. The most common class scores
+  worst because it is small. Mask geometry, not detection difficulty, is what
+  separates them, which is the same conclusion the YOLO comparison reaches from
+  the outside.</p>
+</section>
+
+<section>
+  <h2><span class="num">05</span> What this does not yet prove</h2>
+
+  <p>The comparison above is indicative, not decisive. Five things stand
+  between it and a claim that would survive review.</p>
+
+  <ul class="checks">
+    <li><span class="tag risk">Unverified</span>
+      <div><b>The two models may not share a validation split.</b> The YOLO run
+      referenced a <code>Split_Data_yolo</code> directory that no longer
+      exists. Until both are scored on the same images, the difference includes
+      an unknown amount of split effect.</div></li>
+    <li><span class="tag risk">Unverified</span>
+      <div><b>Two different mAP implementations.</b> Ultralytics computes its
+      own; V6.2 computes its own. Both follow the COCO convention, but they
+      have not been checked against each other on identical inputs.</div></li>
+    <li><span class="tag open">Open</span>
+      <div><b>Neither model is converged.</b> YOLO stopped at 23 of a planned
+      300 epochs; V6.2 is at 23 of 120. Both numbers will move, and not
+      necessarily by the same amount.</div></li>
+    <li><span class="tag open">Open</span>
+      <div><b>No error bars.</b> With 432 test images, the difference between
+      0.78 and 0.80 may well be inside the sampling noise. A 1,000-fold
+      bootstrap is needed; overlapping intervals would mean nothing has been
+      beaten.</div></li>
+    <li><span class="tag ok">Known</span>
+      <div><b>The labels cap what any model can score.</b> 434 training images
+      and 19.4% of the <em>test</em> split contain polygons that overwrite one
+      another — 104 training instances erased outright. That is a ceiling on
+      achievable IoU that no architecture removes.</div></li>
+  </ul>
+
+  <p>One further asymmetry is worth stating plainly rather than burying: YOLO
+  arrived COCO-pretrained, with a large visual prior. V6.2 started from random
+  weights and 4,680 images. That makes the current gap more surprising, not
+  less — but it also means V6.2 carries no transferable prior to a different
+  board type, where YOLO would.</p>
+</section>
+
+<section>
+  <h2><span class="num">06</span> What remains</h2>
+
+  <div class="scroll">
+  <table>
+    <caption>Remaining work, ordered by expected return per unit of effort.
+      Estimated gains are the project's own prior estimates, not measurements.</caption>
+    <thead><tr>
+      <th>Step</th><th>Cost</th><th>Expected</th><th>Retrain?</th>
+    </tr></thead>
+    <tbody>
+      <tr><td>Finish the run (epoch 120)</td><td>~68 h</td><td>&mdash;</td><td>running</td></tr>
+      <tr><td>Fit the five decoder thresholds on validation</td><td>hours</td><td class="win">+0.02&ndash;0.05</td><td>no</td></tr>
+      <tr><td>Dihedral test-time augmentation</td><td>hours</td><td class="win">+0.01&ndash;0.03</td><td>no</td></tr>
+      <tr><td>Re-run both models under one protocol, with bootstrap CIs</td><td>1 day</td><td>the honest number</td><td>no</td></tr>
+      <tr><td>Repair the overlapping polygon labels</td><td>days</td><td>raises the ceiling</td><td>yes</td></tr>
+      <tr><td>Replace centre+offset with distance-transform watershed</td><td>~3 days</td><td>cuts 22.6% of compute</td><td>yes</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>The first two require no retraining at all: they operate on the finished
+  checkpoint and target precision directly, which is the one axis on which
+  YOLO currently leads. The fourth is what turns this report from indicative
+  into decisive.</p>
+</section>
+
+<footer>
+  Model V6.2 &middot; 6,417,683 parameters &middot; trained from random
+  initialisation on 4,680 images, no pretrained weights, nothing downloaded.<br>
+  Figures for Model V6.2 are measured on 256 validation images at epoch 20;
+  figures for YOLO11l-seg are read from its own <code>results.csv</code> at
+  epoch 23. Training was still in progress when this report was compiled.
+</footer>
+
+</div>

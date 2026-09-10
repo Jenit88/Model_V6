@@ -1,0 +1,388 @@
+<title>Beating YOLO Decisively</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+  :root {
+    --ground:#F6F7F4; --surface:#FFFFFF; --sunken:#EFF2EE;
+    --ink:#16211D; --ink-2:#5A6862; --ink-3:#8A968F;
+    --copper:#A9662B; --mask:#17533F; --rule:#DCE3DE;
+    --done:#2E7D5C; --now:#A9662B; --later:#5A6862;
+    --serif:"IBM Plex Serif",Georgia,serif;
+    --sans:"IBM Plex Sans Condensed","Helvetica Neue",Arial,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --ground:#0E1512; --surface:#141C19; --sunken:#101815;
+    --ink:#E4EAE6; --ink-2:#93A29B; --ink-3:#6B7973;
+    --copper:#D2894A; --mask:#54AF8B; --rule:#25302B;
+    --done:#56B189; --now:#D2894A; --later:#93A29B; } }
+  :root[data-theme="dark"] {
+    --ground:#0E1512; --surface:#141C19; --sunken:#101815;
+    --ink:#E4EAE6; --ink-2:#93A29B; --ink-3:#6B7973;
+    --copper:#D2894A; --mask:#54AF8B; --rule:#25302B;
+    --done:#56B189; --now:#D2894A; --later:#93A29B; }
+
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);
+    font:400 16px/1.62 var(--serif);-webkit-font-smoothing:antialiased}
+  .sheet{max-width:62rem;margin:0 auto;padding:0 2rem 5rem}
+  p{margin:0 0 1em;max-width:66ch} strong{font-weight:600}
+  code{font:400 .88em/1.4 var(--mono);color:var(--copper)}
+
+  header.masthead{padding:3.5rem 0 1.5rem;border-bottom:2px solid var(--ink)}
+  .eyebrow{font:500 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;
+    color:var(--copper);margin-bottom:1.1rem}
+  h1{font:700 clamp(2.1rem,5vw,3.1rem)/1.05 var(--sans);letter-spacing:-.015em;
+    margin:0 0 .6rem;text-wrap:balance}
+  .standfirst{font:400 1.14rem/1.5 var(--serif);color:var(--ink-2);max-width:56ch;margin:0}
+  .byline{display:flex;flex-wrap:wrap;gap:1.6rem;margin-top:1.6rem;
+    font:400 12px/1.4 var(--mono);color:var(--ink-3)}
+  .byline b{color:var(--ink-2);font-weight:500}
+
+  section{padding-top:3rem}
+  h2{font:600 1.5rem/1.2 var(--sans);letter-spacing:-.01em;margin:0 0 1.1rem;
+    padding-top:.9rem;border-top:3px solid var(--copper);display:flex;
+    align-items:baseline;gap:.8rem;text-wrap:balance}
+  h2 .num{font:500 .8rem/1 var(--mono);color:var(--copper);letter-spacing:.06em}
+  h3{font:600 1.02rem/1.3 var(--sans);margin:2rem 0 .6rem}
+
+  .scroll{overflow-x:auto;margin:1.4rem 0 1.6rem}
+  table{border-collapse:collapse;width:100%;font:400 13.5px/1.45 var(--mono)}
+  caption{caption-side:bottom;text-align:left;font:400 12px/1.5 var(--mono);
+    color:var(--ink-3);padding-top:.7rem;max-width:72ch}
+  th,td{padding:.5rem .8rem .5rem 0;text-align:right;font-variant-numeric:tabular-nums;
+    border-bottom:1px solid var(--rule);white-space:nowrap}
+  th:first-child,td:first-child{text-align:left;white-space:normal}
+  thead th{font-weight:500;color:var(--ink-3);font-size:11px;letter-spacing:.08em;
+    text-transform:uppercase;border-bottom:1.5px solid var(--ink-2)}
+  tbody tr:last-child td{border-bottom:0}
+  td.win{color:var(--copper);font-weight:500} td.dim{color:var(--ink-3)}
+
+  /* the step list: status is structural, because these really are sequenced */
+  ol.steps{list-style:none;padding:0;margin:1.5rem 0;counter-reset:step}
+  ol.steps > li{display:grid;grid-template-columns:2.6rem 1fr;gap:1.1rem;
+    padding:1.15rem 0;border-bottom:1px solid var(--rule);counter-increment:step}
+  ol.steps > li:last-child{border-bottom:0}
+  .stepnum{font:600 1.5rem/1 var(--sans);color:var(--rule);
+    font-variant-numeric:tabular-nums}
+  .stepnum::before{content:counter(step,decimal-leading-zero)}
+  .steps h4{font:600 1.02rem/1.3 var(--sans);margin:0 0 .1rem;display:flex;
+    flex-wrap:wrap;gap:.7rem;align-items:baseline}
+  .tag{font:500 9.5px/1.7 var(--mono);letter-spacing:.09em;text-transform:uppercase;
+    padding:0 .5rem;border-radius:2px;height:1.7em;white-space:nowrap}
+  .tag.done{color:var(--done);border:1px solid var(--done)}
+  .tag.now{color:var(--now);border:1px solid var(--now)}
+  .tag.later{color:var(--later);border:1px solid var(--later)}
+  .steps .meta{font:400 11.5px/1.6 var(--mono);color:var(--ink-3);margin:.35rem 0 .5rem}
+  .steps p{margin:0 0 .5em;font-size:.95rem;max-width:64ch}
+  .steps p:last-child{margin-bottom:0}
+
+  .thesis{background:var(--sunken);border-left:3px solid var(--copper);
+    padding:1.3rem 1.5rem;margin:1.8rem 0}
+  .thesis p{margin:0;font-size:1.05rem;max-width:62ch}
+  .thesis p+p{margin-top:.8em}
+
+  figure{margin:1.6rem 0 2rem} figure svg{width:100%;height:auto;display:block}
+  figcaption{font:400 12px/1.55 var(--mono);color:var(--ink-3);margin-top:.8rem;
+    max-width:74ch}
+
+  footer{margin-top:3.5rem;padding-top:1.2rem;border-top:2px solid var(--ink);
+    font:400 12px/1.6 var(--mono);color:var(--ink-3)}
+
+  @media print{
+    :root,:root[data-theme="dark"],:root:not([data-theme="light"]){
+      --ground:#FFF;--surface:#FFF;--sunken:#F2F4F1;--ink:#16211D;--ink-2:#4C5A54;
+      --ink-3:#6F7B75;--copper:#8F5522;--mask:#14503C;--rule:#CDD5CF;
+      --done:#2A6B50;--now:#8F5522;--later:#4C5A54}
+    body{background:#fff;font-size:10.5pt}
+    .sheet{max-width:none;padding:0 0 1cm} header.masthead{padding-top:0}
+    section,figure,table,.thesis,ol.steps>li{break-inside:avoid}
+    h2,h3{break-after:avoid} @page{margin:15mm 14mm}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="sheet">
+
+<header class="masthead">
+  <div class="eyebrow">Engineering plan &middot; PCB instance segmentation</div>
+  <h1>Beating YOLO Decisively</h1>
+  <p class="standfirst">The model already leads on every metric. This is the
+    plan to turn that lead into a claim that survives scrutiny &mdash; and to
+    close the one gap that is genuinely large.</p>
+  <div class="byline">
+    <span><b>Model</b> V6.2, 6.42 M parameters, trained from scratch</span>
+    <span><b>Status</b> 120/120 epochs complete</span>
+    <span><b>Compiled</b> 5 September 2026</span>
+  </div>
+</header>
+
+<section style="padding-top:2rem">
+  <h2><span class="num">01</span> Where it stands, measured</h2>
+
+  <div class="scroll">
+  <table>
+    <caption>Complete splits, final checkpoint, after the decoder fix in step 1.
+      YOLO11l-seg is its own best epoch on its own validation split.</caption>
+    <thead><tr>
+      <th>Mask metric</th><th>V6.2 val</th><th>V6.2 test</th><th>YOLO11l-seg</th>
+    </tr></thead>
+    <tbody>
+      <tr><td>mAP50-95</td><td class="win">0.8301</td><td class="win">0.7499</td><td>0.6932</td></tr>
+      <tr><td>mAP50</td><td>0.9747</td><td class="win">0.9749</td><td>0.9693</td></tr>
+      <tr><td>mAP75</td><td>0.9434</td><td>0.8498</td><td class="dim">not reported</td></tr>
+      <tr><td>precision</td><td>0.9310</td><td>0.9639</td><td class="win">0.9543</td></tr>
+      <tr><td>recall</td><td class="win">0.9751</td><td class="win">0.9812</td><td>0.9120</td></tr>
+      <tr><td>parameters</td><td colspan="2" style="text-align:right">6,417,683</td><td>~27,600,000</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="thesis">
+    <p><b>The lead is real but not yet defensible.</b> That YOLO baseline
+    stopped at <b>epoch 23 of 300</b> &mdash; 8% of its schedule, still at
+    roughly 92% of its peak learning rate &mdash; because 300 epochs at
+    74.9 min/epoch is 15.6 days on this laptop.</p>
+    <p>A properly trained YOLO will score meaningfully above 0.693. Steps 6 and
+    7 exist to find out by how much, instead of quietly benefiting from the
+    comparison.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">02</span> Where the remaining loss actually is</h2>
+
+  <p>The test split answers this precisely, and the answer is not what the
+  headline number suggests. Detection is finished; <b>outlining is not</b>.</p>
+
+  <figure>
+    <svg viewBox="0 0 800 210" role="img" aria-label="Test-split average precision by IoU threshold and by class. mAP50 is 0.9749 while mAP50-95 is 0.7499. Per class AP50-95: Rectangle 0.816, Rectangle_concave 0.811, circle_full 0.796, circle 0.563.">
+      <g font-family="IBM Plex Mono, monospace" font-size="11">
+        <text x="0" y="14" fill="var(--ink-2)">test AP50 &mdash; can it find the object?</text>
+        <text x="0" y="118" fill="var(--ink-2)">test AP50-95 &mdash; can it outline the object?</text>
+      </g>
+      <g>
+        <rect x="0" y="24" width="736" height="26" fill="var(--mask)" opacity=".85"/>
+        <text x="746" y="42" font-family="IBM Plex Mono, monospace" font-size="13"
+              font-weight="500" fill="var(--mask)">0.975</text>
+        <rect x="699" y="58" width="48" height="8" fill="var(--mask)" opacity=".30"/>
+        <text x="693" y="66" font-family="IBM Plex Mono, monospace" font-size="10"
+              text-anchor="end" fill="var(--ink-3)">per-class spread 0.926 &ndash; 0.990</text>
+        <text x="0" y="84" font-family="IBM Plex Mono, monospace" font-size="10"
+              fill="var(--ink-3)">nothing is being missed, in any class</text>
+      </g>
+      <g>
+        <rect x="0" y="128" width="566" height="26" fill="var(--copper)" opacity=".85"/>
+        <text x="576" y="146" font-family="IBM Plex Mono, monospace" font-size="13"
+              font-weight="500" fill="var(--copper)">0.750</text>
+        <rect x="425" y="162" width="192" height="8" fill="var(--copper)" opacity=".35"/>
+        <text x="419" y="170" font-family="IBM Plex Mono, monospace" font-size="10"
+              text-anchor="end" fill="var(--copper)">per-class spread 0.563 &ndash; 0.816</text>
+        <text x="0" y="192" font-family="IBM Plex Mono, monospace" font-size="10"
+              fill="var(--ink-3)">the whole 0.225 gap is mask geometry, concentrated in the smallest objects</text>
+      </g>
+    </svg>
+    <figcaption>Bars are drawn to a common 0&ndash;1 scale. The distance
+      between the two is what every step below is aimed at.</figcaption>
+  </figure>
+
+  <div class="scroll">
+  <table>
+    <caption>Per class on test. The AP50-95 ordering is the object-size
+      ordering, inverted: median diameters run 108 px for Rectangle_concave
+      down to 16 px for circle and circle_full.</caption>
+    <thead><tr><th>Class</th><th>share</th><th>AP50</th><th>AP50-95</th><th>gap</th></tr></thead>
+    <tbody>
+      <tr><td>Rectangle</td><td>45%</td><td>0.9892</td><td>0.8159</td><td>0.173</td></tr>
+      <tr><td>Rectangle_concave</td><td>0.3%</td><td>0.9256</td><td>0.8105</td><td>0.115</td></tr>
+      <tr><td>circle_full</td><td>45%</td><td>0.9901</td><td>0.7959</td><td>0.194</td></tr>
+      <tr><td><b>circle</b> <span style="color:var(--ink-3)">(annulus, 16 px)</span></td><td>10%</td><td>0.9821</td><td class="win">0.5630</td><td><b>0.419</b></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p><code>circle</code> is an annulus whose median diameter falls from 33.8 px
+  in training to <b>16.1 px</b> in test &mdash; a ring three or four pixels
+  thick. It is found 98% of the time and outlined tightly almost never. That
+  single class is the largest recoverable loss in the model.</p>
+</section>
+
+<section>
+  <h2><span class="num">03</span> The plan</h2>
+
+  <ol class="steps">
+    <li>
+      <span class="stepnum"></span>
+      <div>
+        <h4>Stop minting instances from offset residue <span class="tag done">Done</span></h4>
+        <div class="meta">no retraining &middot; measured, not estimated</div>
+        <p>The decoder turned every foreground pixel whose predicted offset
+        landed near no centre into a new instance. Measured over 150 validation
+        images by re-running the official matcher with and without that path:
+        <b>75 false positives against 2 true positives</b>. The residue is
+        object rims and specular highlights, not missed objects.</p>
+        <p>Result on the complete splits, no retraining: test mAP50-95
+        0.7463&nbsp;&rarr;&nbsp;<b>0.7499</b>, precision
+        0.9595&nbsp;&rarr;&nbsp;<b>0.9639</b>, 155 fewer false positives and
+        two <em>more</em> true positives. <code>Rectangle_concave</code>
+        precision on test 0.4414&nbsp;&rarr;&nbsp;<b>0.7000</b>.</p>
+      </div>
+    </li>
+    <li>
+      <span class="stepnum"></span>
+      <div>
+        <h4>Dihedral test-time augmentation <span class="tag now">Built, not yet measured</span></h4>
+        <div class="meta">no retraining &middot; 8&times; inference &middot; targets mask geometry</div>
+        <p>Every class here is symmetric under all eight flips and quarter
+        turns, so their predictions can be averaged. Averaging eight views
+        sharpens exactly what is weak: the sub-pixel placement of a boundary on
+        a 16-pixel ring.</p>
+        <p>The reason this is a module and not a loop: <b>the offset head is a
+        vector field</b>. Un-rotating the image grid is only half the inverse;
+        every (dx,&nbsp;dy) pair has to be rotated too, or the averaged field
+        points eight ways and the decoder groups nothing. Its self-check
+        already caught one real aliasing bug that made exactly one of the eight
+        transforms silently wrong.</p>
+      </div>
+    </li>
+    <li>
+      <span class="stepnum"></span>
+      <div>
+        <h4>Fit the five decoder thresholds <span class="tag now">Next</span></h4>
+        <div class="meta">no retraining &middot; hours &middot; split-validated</div>
+        <p>The thresholds in use are the ones Model&nbsp;V5 was tuned with, and
+        they are shared across all four classes. Random search over 200 draws,
+        scored on cached validation predictions, <b>fitted on one half of
+        validation and verified on the other</b> &mdash; otherwise it fits
+        noise.</p>
+        <p>One caveat has to travel with the result: 44 images are byte-identical
+        between validation and test, so anything tuned on validation
+        contaminates roughly 10% of the test set. That must be stated wherever
+        the test number is quoted.</p>
+      </div>
+    </li>
+    <li>
+      <span class="stepnum"></span>
+      <div>
+        <h4>Predict masks at full resolution <span class="tag later">Retrain</span></h4>
+        <div class="meta">~3 days &middot; the structural fix for the 0.225 gap</div>
+        <p>Both decoders currently stop at 256&times;256 and the logit maps are
+        bilinearly upsampled to 512. That was a deliberate speed trade &mdash;
+        70.6% of the model's 42.75 GMAC sit at that resolution &mdash; and its
+        cost is written into the note that introduced it: <em>slightly softer
+        boundaries</em>.</p>
+        <p>A 16-pixel annulus is 8 pixels at head resolution and its ring is
+        under two. That is where AP50-95 0.5630 comes from. Restoring full
+        resolution for the semantic and boundary heads is the direct fix; it
+        will not fit in 8&nbsp;GB at batch 2 without also cutting the
+        centre/offset heads, which step&nbsp;5 does anyway.</p>
+      </div>
+    </li>
+    <li>
+      <span class="stepnum"></span>
+      <div>
+        <h4>Replace centre+offset with distance-transform watershed <span class="tag later">Retrain</span></h4>
+        <div class="meta">~3 days &middot; frees 22.6% of the compute</div>
+        <p>Centre+offset grouping comes from Panoptic-DeepLab, built for
+        crowded, occluded street scenes. These are well-separated pads. It is
+        the most data-hungry part of the model and the two head stacks alone
+        are <b>22.6% of all MACs</b>, both at 256&times;256.</p>
+        <p>Swapping the two-component vector field for one scalar
+        inner-distance field is easier to learn, removes the residue problem in
+        step&nbsp;1 by construction, and buys back the compute that
+        step&nbsp;4 needs.</p>
+      </div>
+    </li>
+    <li>
+      <span class="stepnum"></span>
+      <div>
+        <h4>Train YOLO properly <span class="tag later">2&ndash;3 days</span></h4>
+        <div class="meta">the honest baseline</div>
+        <p>Resume from <code>last.pt</code> at epoch 24 with its optimiser
+        state and take it to at least epoch 80, so both models are compared at
+        a similar fraction of their schedules rather than 100% against 8%.</p>
+      </div>
+    </li>
+    <li>
+      <span class="stepnum"></span>
+      <div>
+        <h4>One protocol, one test set, error bars <span class="tag later">1 day</span></h4>
+        <div class="meta">what turns the number into a claim</div>
+        <p>Score both models on the same 432 test images with the same mAP
+        implementation, and bootstrap that set 1,000 times for 95% intervals.
+        With 432 images the difference between 0.75 and 0.77 may sit inside the
+        sampling noise; overlapping intervals would mean nothing has been
+        beaten.</p>
+        <p>Also fix the labels: 19.4% of the test split contains polygons that
+        overwrite one another, which caps the IoU any model can reach.</p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<section>
+  <h2><span class="num">04</span> Why the architecture should win, and where it should not</h2>
+
+  <p>Three differences are structural rather than a matter of training length,
+  and all three act at exactly the IoU thresholds where the gap sits.</p>
+
+  <p><b>Prototype masks are low-rank.</b> YOLO-seg reconstructs each instance
+  as a weighted combination of a small basis of prototypes at reduced
+  resolution. On a 16-pixel disc the rim <em>is</em> the object, and the rim is
+  what a shared basis cannot spend capacity on. V6.2 predicts a class per pixel
+  at full resolution; no mask is constrained to resemble a blend of others.</p>
+
+  <p><b>A mask cropped to a box inherits the box's error.</b> YOLO-seg
+  multiplies its mask by the detected bounding box. Slightly loose admits
+  background; slightly tight shaves the object. At IoU 0.5 that rarely changes
+  the verdict; at 0.85 it decides it. V6.2 produces no boxes at all.</p>
+
+  <p><b>Axis-aligned boxes describe a rotated pad badly.</b> These pads sit at
+  arbitrary angles &mdash; the training cycle alone sweeps 45 rotations. A box
+  around a diagonal elongated pad is mostly background, which weakens both the
+  mask crop and the non-maximum suppression deciding which detections survive.
+  Dense per-pixel grouping has no orientation to lose.</p>
+
+  <p>Against that, two honest disadvantages. YOLO arrives pretrained on COCO
+  and so carries a transferable prior to a new board type, where V6.2 &mdash;
+  4,680 images from random initialisation &mdash; carries none. And YOLO is far
+  cheaper at inference: V6.2 currently decodes at 1.5 images/second, most of it
+  CPU-side instance grouping.</p>
+</section>
+
+<section>
+  <h2><span class="num">05</span> What success looks like</h2>
+
+  <div class="scroll">
+  <table>
+    <caption>Targets, not predictions. Steps 1&ndash;3 need no retraining; the
+      figures for 4 and 5 are the project's own prior estimates.</caption>
+    <thead><tr><th>After</th><th>test mAP50-95</th><th>cost</th><th>retrain</th></tr></thead>
+    <tbody>
+      <tr><td>today</td><td>0.7499</td><td>&mdash;</td><td>&mdash;</td></tr>
+      <tr><td>+ TTA (step 2)</td><td>0.76 &ndash; 0.78</td><td>hours</td><td>no</td></tr>
+      <tr><td>+ fitted thresholds (step 3)</td><td>0.78 &ndash; 0.80</td><td>hours</td><td>no</td></tr>
+      <tr><td>+ full-resolution masks (4, 5)</td><td class="win">0.82 &ndash; 0.86</td><td>~3 days</td><td>yes</td></tr>
+      <tr><td>+ repaired labels (7)</td><td class="dim">raises the ceiling itself</td><td>days</td><td>yes</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="thesis">
+    <p>The target is not a bigger number. It is a number on an untouched test
+    split, under one protocol, against a fully-trained YOLO, with confidence
+    intervals that do not overlap.</p>
+    <p>Everything above either moves that number or makes it mean something.</p>
+  </div>
+</section>
+
+<footer>
+  Model V6.2 &middot; 6,417,683 parameters &middot; trained from random
+  initialisation on 4,680 images; no pretrained weights, nothing downloaded.<br>
+  All V6.2 figures are measured on the complete 1,048-image validation and
+  432-image test splits. YOLO11l-seg figures are read from its own results.csv
+  at its best epoch (22 of a planned 300).
+</footer>
+
+</div>

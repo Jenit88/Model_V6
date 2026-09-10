@@ -1,0 +1,201 @@
+{
+  "images": 12,
+  "source": "/mnt/c/Users/u117134/Desktop/ro/ro_2",
+  "mean_padding_fraction": 0.3331705729166667,
+  "match_iou": 0.5,
+  "match_threshold": 0.5,
+  "raw_bands": {
+    "v62": {
+      "0.0-0.2": 3,
+      "0.2-0.4": 25,
+      "0.4-0.6": 23,
+      "0.6-0.8": 14,
+      "0.8-1.0": 423
+    },
+    "yolo": {
+      "0.0-0.2": 147,
+      "0.2-0.4": 5,
+      "0.4-0.6": 4,
+      "0.6-0.8": 15,
+      "0.8-1.0": 404
+    }
+  },
+  "floor_sweep": {
+    "0.00": {
+      "v62": 488,
+      "yolo": 575
+    },
+    "0.10": {
+      "v62": 488,
+      "yolo": 436
+    },
+    "0.25": {
+      "v62": 479,
+      "yolo": 427
+    },
+    "0.50": {
+      "v62": 449,
+      "yolo": 422
+    },
+    "0.75": {
+      "v62": 427,
+      "yolo": 407
+    },
+    "0.90": {
+      "v62": 185,
+      "yolo": 205
+    }
+  },
+  "per_class_at_threshold": {
+    "v62": {
+      "Rectangle": 444,
+      "Rectangle_concave": 0,
+      "circle": 2,
+      "circle_full": 3
+    },
+    "yolo": {
+      "Rectangle": 419,
+      "Rectangle_concave": 0,
+      "circle": 0,
+      "circle_full": 3
+    }
+  },
+  "agreement": {
+    "matched": 410,
+    "only_v62": 39,
+    "only_yolo": 12,
+    "mean_matched_iou": 0.8439128106653526
+  },
+  "per_image": [
+    {
+      "index": 0,
+      "name": "sample_002303.png",
+      "v62": 34,
+      "yolo": 13,
+      "matched": 12,
+      "only_v62": 22,
+      "only_yolo": 1,
+      "mean_iou": 0.8549
+    },
+    {
+      "index": 1,
+      "name": "sample_002303_2.png",
+      "v62": 41,
+      "yolo": 37,
+      "matched": 36,
+      "only_v62": 5,
+      "only_yolo": 1,
+      "mean_iou": 0.8516
+    },
+    {
+      "index": 2,
+      "name": "sample_002303_3.png",
+      "v62": 46,
+      "yolo": 45,
+      "matched": 43,
+      "only_v62": 3,
+      "only_yolo": 2,
+      "mean_iou": 0.8195
+    },
+    {
+      "index": 3,
+      "name": "sample_002303_4.png",
+      "v62": 39,
+      "yolo": 40,
+      "matched": 39,
+      "only_v62": 0,
+      "only_yolo": 1,
+      "mean_iou": 0.8436
+    },
+    {
+      "index": 4,
+      "name": "sample_002303_42.png",
+      "v62": 39,
+      "yolo": 40,
+      "matched": 39,
+      "only_v62": 0,
+      "only_yolo": 1,
+      "mean_iou": 0.8259
+    },
+    {
+      "index": 5,
+      "name": "sample_002303_5.png",
+      "v62": 39,
+      "yolo": 39,
+      "matched": 39,
+      "only_v62": 0,
+      "only_yolo": 0,
+      "mean_iou": 0.8331
+    },
+    {
+      "index": 6,
+      "name": "sample_002303_6.png",
+      "v62": 32,
+      "yolo": 29,
+      "matched": 29,
+      "only_v62": 3,
+      "only_yolo": 0,
+      "mean_iou": 0.8432
+    },
+    {
+      "index": 7,
+      "name": "sample_002303_8.png",
+      "v62": 33,
+      "yolo": 34,
+      "matched": 32,
+      "only_v62": 1,
+      "only_yolo": 2,
+      "mean_iou": 0.8736
+    },
+    {
+      "index": 8,
+      "name": "sample_002568_0.png",
+      "v62": 36,
+      "yolo": 38,
+      "matched": 36,
+      "only_v62": 0,
+      "only_yolo": 2,
+      "mean_iou": 0.8668
+    },
+    {
+      "index": 9,
+      "name": "sample_002568_1.png",
+      "v62": 33,
+      "yolo": 35,
+      "matched": 33,
+      "only_v62": 0,
+      "only_yolo": 2,
+      "mean_iou": 0.8425
+    },
+    {
+      "index": 10,
+      "name": "sample_002568_fe.png",
+      "v62": 40,
+      "yolo": 36,
+      "matched": 36,
+      "only_v62": 4,
+      "only_yolo": 0,
+      "mean_iou": 0.8297
+    },
+    {
+      "index": 11,
+      "name": "sample_002568_fe_2.png",
+      "v62": 37,
+      "yolo": 36,
+      "matched": 36,
+      "only_v62": 1,
+      "only_yolo": 0,
+      "mean_iou": 0.8602
+    }
+  ],
+  "seconds_per_image": {
+    "v62": 1.0231817037505,
+    "yolo": 0.6158098544171177
+  },
+  "caveats": [
+    "Unlabelled images: no ground truth, so no accuracy and no mAP.",
+    "V6.2 and YOLO confidences are different quantities; a shared threshold matches the number, not the operating point.",
+    "V6.2 runs single-pass here; predict() has no TTA path, so this is its deployment configuration, not the TTA setup behind 0.7710.",
+    "Agreement is not correctness. Both models can be wrong together."
+  ]
+}

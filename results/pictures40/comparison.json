@@ -1,0 +1,481 @@
+{
+  "images": 40,
+  "source": "/mnt/c/Users/u117134/Desktop/_Pictures",
+  "mean_padding_fraction": 0.333984375,
+  "match_iou": 0.5,
+  "match_threshold": 0.5,
+  "raw_bands": {
+    "v62": {
+      "0.0-0.2": 17,
+      "0.2-0.4": 53,
+      "0.4-0.6": 36,
+      "0.6-0.8": 59,
+      "0.8-1.0": 458
+    },
+    "yolo": {
+      "0.0-0.2": 180,
+      "0.2-0.4": 11,
+      "0.4-0.6": 22,
+      "0.6-0.8": 29,
+      "0.8-1.0": 374
+    }
+  },
+  "floor_sweep": {
+    "0.00": {
+      "v62": 623,
+      "yolo": 616
+    },
+    "0.10": {
+      "v62": 622,
+      "yolo": 444
+    },
+    "0.25": {
+      "v62": 590,
+      "yolo": 433
+    },
+    "0.50": {
+      "v62": 536,
+      "yolo": 415
+    },
+    "0.75": {
+      "v62": 484,
+      "yolo": 384
+    },
+    "0.90": {
+      "v62": 354,
+      "yolo": 287
+    }
+  },
+  "per_class_at_threshold": {
+    "v62": {
+      "Rectangle": 273,
+      "Rectangle_concave": 6,
+      "circle": 95,
+      "circle_full": 162
+    },
+    "yolo": {
+      "Rectangle": 247,
+      "Rectangle_concave": 4,
+      "circle": 64,
+      "circle_full": 100
+    }
+  },
+  "agreement": {
+    "matched": 401,
+    "only_v62": 135,
+    "only_yolo": 14,
+    "mean_matched_iou": 0.897446681342813
+  },
+  "per_image": [
+    {
+      "index": 0,
+      "name": "037649_A9-8_SM31 (3).png",
+      "v62": 2,
+      "yolo": 2,
+      "matched": 2,
+      "only_v62": 0,
+      "only_yolo": 0,
+      "mean_iou": 0.9773
+    },
+    {
+      "index": 1,
+      "name": "111979_A9-8_SM14 (3).png",
+      "v62": 77,
+      "yolo": 30,
+      "matched": 28,
+      "only_v62": 49,
+      "only_yolo": 2,
+      "mean_iou": 0.8406
+    },
+    {
+      "index": 2,
+      "name": "111979_A9-8_SM33 (3).png",
+      "v62": 49,
+      "yolo": 35,
+      "matched": 33,
+      "only_v62": 16,
+      "only_yolo": 2,
+      "mean_iou": 0.9013
+    },
+    {
+      "index": 3,
+      "name": "13446_A9-8_SM39.png",
+      "v62": 4,
+      "yolo": 4,
+      "matched": 3,
+      "only_v62": 1,
+      "only_yolo": 1,
+      "mean_iou": 0.9395
+    },
+    {
+      "index": 4,
+      "name": "13446_A9-8_SM49 (3).png",
+      "v62": 4,
+      "yolo": 4,
+      "matched": 4,
+      "only_v62": 0,
+      "only_yolo": 0,
+      "mean_iou": 0.9653
+    },
+    {
+      "index": 5,
+      "name": "13446_A9-8_SM51 (3).png",
+      "v62": 8,
+      "yolo": 9,
+      "matched": 8,
+      "only_v62": 0,
+      "only_yolo": 1,
+      "mean_iou": 0.92
+    },
+    {
+      "index": 6,
+      "name": "13446_A9-8_SM63 (2).png",
+      "v62": 7,
+      "yolo": 6,
+      "matched": 6,
+      "only_v62": 1,
+      "only_yolo": 0,
+      "mean_iou": 0.9472
+    },
+    {
+      "index": 7,
+      "name": "13568_A9-8_SM105 (4).png",
+      "v62": 1,
+      "yolo": 0,
+      "matched": 0,
+      "only_v62": 1,
+      "only_yolo": 0,
+      "mean_iou": null
+    },
+    {
+      "index": 8,
+      "name": "13568_A9-8_SM18 (2).png",
+      "v62": 15,
+      "yolo": 15,
+      "matched": 15,
+      "only_v62": 0,
+      "only_yolo": 0,
+      "mean_iou": 0.9353
+    },
+    {
+      "index": 9,
+      "name": "13568_A9-8_SM34 (4).png",
+      "v62": 7,
+      "yolo": 7,
+      "matched": 7,
+      "only_v62": 0,
+      "only_yolo": 0,
+      "mean_iou": 0.8829
+    },
+    {
+      "index": 10,
+      "name": "16521_A9-8_2_SM102 (4).png",
+      "v62": 1,
+      "yolo": 1,
+      "matched": 1,
+      "only_v62": 0,
+      "only_yolo": 0,
+      "mean_iou": 0.9693
+    },
+    {
+      "index": 11,
+      "name": "16521_A9-8_2_SM20.png",
+      "v62": 22,
+      "yolo": 22,
+      "matched": 22,
+      "only_v62": 0,
+      "only_yolo": 0,
+      "mean_iou": 0.9051
+    },
+    {
+      "index": 12,
+      "name": "16521_A9-8_2_SM29.png",
+      "v62": 2,
+      "yolo": 2,
+      "matched": 2,
+      "only_v62": 0,
+      "only_yolo": 0,
+      "mean_iou": 0.9578
+    },
+    {
+      "index": 13,
+      "name": "16521_A9-8_2_SM30 (4).png",
+      "v62": 1,
+      "yolo": 1,
+      "matched": 1,
+      "only_v62": 0,
+      "only_yolo": 0,
+      "mean_iou": 0.954
+    },
+    {
+      "index": 14,
+      "name": "16521_A9-8_2_SM31 (4).png",
+      "v62": 2,
+      "yolo": 1,
+      "matched": 1,
+      "only_v62": 1,
+      "only_yolo": 0,
+      "mean_iou": 0.9478
+    },
+    {
+      "index": 15,
+      "name": "16521_A9-8_2_SM4 (4).png",
+      "v62": 4,
+      "yolo": 2,
+      "matched": 2,
+      "only_v62": 2,
+      "only_yolo": 0,
+      "mean_iou": 0.9029
+    },
+    {
+      "index": 16,
+      "name": "16521_A9-8_2_SM7 (3).png",
+      "v62": 7,
+      "yolo": 7,
+      "matched": 4,
+      "only_v62": 3,
+      "only_yolo": 3,
+      "mean_iou": 0.9025
+    },
+    {
+      "index": 17,
+      "name": "16521_A9-8_2_SM90.png",
+      "v62": 1,
+      "yolo": 1,
+      "matched": 1,
+      "only_v62": 0,
+      "only_yolo": 0,
+      "mean_iou": 0.9519
+    },
+    {
+      "index": 18,
+      "name": "259m80575-hh_A9-8_SM32 (2).png",
+      "v62": 38,
+      "yolo": 37,
+      "matched": 37,
+      "only_v62": 1,
+      "only_yolo": 0,
+      "mean_iou": 0.893
+    },
+    {
+      "index": 19,
+      "name": "259m80575-hh_A9-8_SM39.png",
+      "v62": 24,
+      "yolo": 24,
+      "matched": 23,
+      "only_v62": 1,
+      "only_yolo": 1,
+      "mean_iou": 0.9012
+    },
+    {
+      "index": 20,
+      "name": "259m80575-hh_A9-8_SM9 (3).png",
+      "v62": 21,
+      "yolo": 21,
+      "matched": 21,
+      "only_v62": 0,
+      "only_yolo": 0,
+      "mean_iou": 0.809
+    },
+    {
+      "index": 21,
+      "name": "418597_rt_001_A9-8_SM37 (4).png",
+      "v62": 14,
+      "yolo": 13,
+      "matched": 12,
+      "only_v62": 2,
+      "only_yolo": 1,
+      "mean_iou": 0.9447
+    },
+    {
+      "index": 22,
+      "name": "418597_rt_001_A9-8_SM42 (2).png",
+      "v62": 11,
+      "yolo": 10,
+      "matched": 10,
+      "only_v62": 1,
+      "only_yolo": 0,
+      "mean_iou": 0.9206
+    },
+    {
+      "index": 23,
+      "name": "418597_rt_001_A9-8_SM59 (4).png",
+      "v62": 6,
+      "yolo": 5,
+      "matched": 5,
+      "only_v62": 1,
+      "only_yolo": 0,
+      "mean_iou": 0.889
+    },
+    {
+      "index": 24,
+      "name": "418597_rt_001_A9-8_SM76 (3).png",
+      "v62": 3,
+      "yolo": 2,
+      "matched": 1,
+      "only_v62": 2,
+      "only_yolo": 1,
+      "mean_iou": 0.9856
+    },
+    {
+      "index": 25,
+      "name": "M152017_SM50 (4).png",
+      "v62": 0,
+      "yolo": 0,
+      "matched": 0,
+      "only_v62": 0,
+      "only_yolo": 0,
+      "mean_iou": null
+    },
+    {
+      "index": 26,
+      "name": "M152017_SM56 (3).png",
+      "v62": 1,
+      "yolo": 0,
+      "matched": 0,
+      "only_v62": 1,
+      "only_yolo": 0,
+      "mean_iou": null
+    },
+    {
+      "index": 27,
+      "name": "M152017_SM80 (2).png",
+      "v62": 5,
+      "yolo": 0,
+      "matched": 0,
+      "only_v62": 5,
+      "only_yolo": 0,
+      "mean_iou": null
+    },
+    {
+      "index": 28,
+      "name": "M152017_SM80 (4).png",
+      "v62": 0,
+      "yolo": 0,
+      "matched": 0,
+      "only_v62": 0,
+      "only_yolo": 0,
+      "mean_iou": null
+    },
+    {
+      "index": 29,
+      "name": "ds-test1_A9-8_SM22 (3).png",
+      "v62": 20,
+      "yolo": 11,
+      "matched": 11,
+      "only_v62": 9,
+      "only_yolo": 0,
+      "mean_iou": 0.8916
+    },
+    {
+      "index": 30,
+      "name": "es_c7628_test_A9-8_SM20 (3).png",
+      "v62": 11,
+      "yolo": 10,
+      "matched": 10,
+      "only_v62": 1,
+      "only_yolo": 0,
+      "mean_iou": 0.9291
+    },
+    {
+      "index": 31,
+      "name": "es_c7628_test_A9-8_SM28 (3).png",
+      "v62": 41,
+      "yolo": 35,
+      "matched": 35,
+      "only_v62": 6,
+      "only_yolo": 0,
+      "mean_iou": 0.8888
+    },
+    {
+      "index": 32,
+      "name": "es_c7628_test_A9-8_SM6 (3).png",
+      "v62": 27,
+      "yolo": 23,
+      "matched": 23,
+      "only_v62": 4,
+      "only_yolo": 0,
+      "mean_iou": 0.9095
+    },
+    {
+      "index": 33,
+      "name": "es_c7628_test_A9-8_SM8 (3).png",
+      "v62": 39,
+      "yolo": 35,
+      "matched": 35,
+      "only_v62": 4,
+      "only_yolo": 0,
+      "mean_iou": 0.8936
+    },
+    {
+      "index": 34,
+      "name": "mimul_A9-8_SM7 (3).png",
+      "v62": 14,
+      "yolo": 12,
+      "matched": 12,
+      "only_v62": 2,
+      "only_yolo": 0,
+      "mean_iou": 0.8964
+    },
+    {
+      "index": 35,
+      "name": "ngc0004_A9-8_SM64 (4).png",
+      "v62": 15,
+      "yolo": 15,
+      "matched": 15,
+      "only_v62": 0,
+      "only_yolo": 0,
+      "mean_iou": 0.9108
+    },
+    {
+      "index": 36,
+      "name": "ueb10r3_A9-8_SM26 (2).png",
+      "v62": 3,
+      "yolo": 1,
+      "matched": 1,
+      "only_v62": 2,
+      "only_yolo": 0,
+      "mean_iou": 0.9504
+    },
+    {
+      "index": 37,
+      "name": "zol0171_A9-8_SM1 (4).png",
+      "v62": 3,
+      "yolo": 2,
+      "matched": 1,
+      "only_v62": 2,
+      "only_yolo": 1,
+      "mean_iou": 0.8331
+    },
+    {
+      "index": 38,
+      "name": "zol0171_A9-8_SM24 (3).png",
+      "v62": 13,
+      "yolo": 9,
+      "matched": 8,
+      "only_v62": 5,
+      "only_yolo": 1,
+      "mean_iou": 0.9276
+    },
+    {
+      "index": 39,
+      "name": "zol0171_A9-8_SM5 (2).png",
+      "v62": 13,
+      "yolo": 1,
+      "matched": 1,
+      "only_v62": 12,
+      "only_yolo": 0,
+      "mean_iou": 0.8808
+    }
+  ],
+  "seconds_per_image": {
+    "v62": 1.0515098618252523,
+    "yolo": 0.28723909822510907
+  },
+  "caveats": [
+    "Unlabelled images: no ground truth, so no accuracy and no mAP.",
+    "V6.2 and YOLO confidences are different quantities; a shared threshold matches the number, not the operating point.",
+    "V6.2 runs single-pass here; predict() has no TTA path, so this is its deployment configuration, not the TTA setup behind 0.7710.",
+    "Agreement is not correctness. Both models can be wrong together."
+  ]
+}

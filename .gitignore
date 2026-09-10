@@ -1,0 +1,10 @@
+logs/
+__pycache__/
+*.pyc
+
+# Working notes for the coding assistant, kept locally and not published.
+# memory/v6-2-uplift-plan.md and memory/dataset-split-data-audit.md stay
+# tracked on purpose: those two are the project's own measured findings, not
+# session bookkeeping.
+CLAUDE.md
+memory/session/

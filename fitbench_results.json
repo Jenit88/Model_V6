@@ -1,0 +1,47 @@
+[
+  {
+    "label": "baseline: spe=1, no xla",
+    "batch_size": 2,
+    "effective_batch": 2,
+    "step_seconds": 0.8004114762916666,
+    "ms_per_image": 400.2057381458333,
+    "peak_gib": 3.5995185375213623,
+    "epoch_minutes": 31.216047575375,
+    "compile_seconds": 109.5128439959999
+  },
+  {
+    "label": "spe=8",
+    "batch_size": 2,
+    "effective_batch": 2,
+    "step_seconds": 0.7799573342916611,
+    "ms_per_image": 389.97866714583057,
+    "peak_gib": 3.686917543411255,
+    "epoch_minutes": 30.418336037374786,
+    "compile_seconds": 97.1091899449998
+  },
+  {
+    "label": "spe=8, no per-class IoU",
+    "batch_size": 2,
+    "effective_batch": 2,
+    "step_seconds": 0.7702155706666645,
+    "ms_per_image": 385.10778533333223,
+    "peak_gib": 3.889845848083496,
+    "epoch_minutes": 30.038407255999914,
+    "compile_seconds": 92.45089462400028
+  },
+  {
+    "label": "spe=8, no per-class, XLA",
+    "failed": "InternalError",
+    "detail": "Graph execution error:"
+  },
+  {
+    "label": "+ accumulation 2",
+    "batch_size": 2,
+    "effective_batch": 4,
+    "step_seconds": 0.7383459181666581,
+    "ms_per_image": 369.17295908332903,
+    "peak_gib": 3.999532699584961,
+    "epoch_minutes": 28.795490808499665,
+    "compile_seconds": 135.0032031730002
+  }
+]

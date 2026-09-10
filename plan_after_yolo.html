@@ -1,0 +1,726 @@
+<title>From Benchmark to Board</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+  /* Palette carried over from report_v62_vs_yolo11.html: copper pads on
+     solder-mask green, over a neutral with a faint green cast. */
+  :root {
+    --ground: #F6F7F4;
+    --surface: #FFFFFF;
+    --sunken: #EFF2EE;
+    --ink: #16211D;
+    --ink-2: #5A6862;
+    --ink-3: #8A968F;
+    --copper: #A9662B;
+    --copper-w: #F0E2D3;
+    --mask: #17533F;
+    --rule: #DCE3DE;
+    --good: #2E7D5C;
+    --warn: #92701C;
+    --bad: #A2413F;
+    --serif: "IBM Plex Serif", Georgia, "Times New Roman", serif;
+    --sans: "IBM Plex Sans Condensed", "Helvetica Neue", Arial, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0E1512;
+      --surface: #141C19;
+      --sunken: #101815;
+      --ink: #E4EAE6;
+      --ink-2: #93A29B;
+      --ink-3: #6B7973;
+      --copper: #D2894A;
+      --copper-w: #33241A;
+      --mask: #54AF8B;
+      --rule: #25302B;
+      --good: #56B189;
+      --warn: #C6A047;
+      --bad: #D4736F;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0E1512;
+    --surface: #141C19;
+    --sunken: #101815;
+    --ink: #E4EAE6;
+    --ink-2: #93A29B;
+    --ink-3: #6B7973;
+    --copper: #D2894A;
+    --copper-w: #33241A;
+    --mask: #54AF8B;
+    --rule: #25302B;
+    --good: #56B189;
+    --warn: #C6A047;
+    --bad: #D4736F;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font: 400 16px/1.62 var(--serif);
+    -webkit-font-smoothing: antialiased;
+  }
+  .page { max-width: 860px; margin: 0 auto; padding: 56px 28px 96px; }
+
+  .eyebrow {
+    font: 600 11px/1 var(--sans);
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  h1 {
+    font: 600 40px/1.12 var(--serif);
+    letter-spacing: -.015em;
+    margin: 14px 0 0;
+    text-wrap: balance;
+  }
+  .standfirst {
+    font-size: 19px;
+    line-height: 1.55;
+    color: var(--ink-2);
+    margin: 18px 0 0;
+    max-width: 60ch;
+    text-wrap: pretty;
+  }
+  h2 {
+    font: 600 25px/1.25 var(--serif);
+    letter-spacing: -.01em;
+    margin: 0 0 6px;
+    text-wrap: balance;
+  }
+  h3 {
+    font: 600 12px/1.3 var(--sans);
+    letter-spacing: .11em;
+    text-transform: uppercase;
+    color: var(--copper);
+    margin: 0 0 10px;
+  }
+  p { margin: 0 0 15px; max-width: 66ch; text-wrap: pretty; }
+  section { margin-top: 52px; }
+  a { color: var(--mask); }
+
+  code, .m { font-family: var(--mono); font-size: .88em; }
+  code {
+    background: var(--sunken);
+    padding: .1em .34em;
+    border-radius: 2px;
+  }
+
+  /* Masthead ------------------------------------------------------------ */
+  .masthead { border-bottom: 2px solid var(--ink); padding-bottom: 24px; }
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1px;
+    margin-top: 30px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+  }
+  .fact { background: var(--surface); padding: 13px 15px; }
+  .fact dt {
+    font: 500 10px/1 var(--sans);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .fact dd {
+    margin: 7px 0 0;
+    font: 500 17px/1.2 var(--mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Section rule encodes the tier, so it is information, not ornament. */
+  .band {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    border-top: 1px solid var(--rule);
+    padding-top: 14px;
+    margin-bottom: 20px;
+  }
+  .band .tier {
+    font: 500 11px/1 var(--mono);
+    letter-spacing: .06em;
+    color: var(--surface);
+    background: var(--mask);
+    padding: 5px 8px;
+    white-space: nowrap;
+  }
+  .band .tier.free { background: var(--good); }
+  .band .tier.data { background: var(--warn); }
+  .band .cost {
+    margin-left: auto;
+    font: 500 11px/1 var(--sans);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    white-space: nowrap;
+  }
+
+  /* Tables --------------------------------------------------------------- */
+  .scroll { overflow-x: auto; margin: 0 0 16px; }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font: 400 14px/1.45 var(--mono);
+    font-variant-numeric: tabular-nums;
+  }
+  caption {
+    caption-side: top;
+    text-align: left;
+    font: 400 13px/1.5 var(--sans);
+    color: var(--ink-2);
+    padding-bottom: 9px;
+  }
+  th, td { padding: 7px 12px 7px 0; text-align: right; white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; padding-right: 22px; }
+  thead th {
+    font: 500 10px/1 var(--sans);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 8px;
+  }
+  tbody tr { border-bottom: 1px solid var(--rule); }
+  tbody tr.total { border-bottom: none; border-top: 1px solid var(--ink); }
+  td.win { color: var(--good); font-weight: 500; }
+  td.loss { color: var(--bad); }
+  td.flat { color: var(--warn); }
+  .ci { color: var(--ink-3); font-size: 12px; }
+
+  /* Score-band chart ------------------------------------------------------ */
+  .chart { margin: 4px 0 8px; }
+  .row {
+    display: grid;
+    grid-template-columns: 62px 1fr;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 7px;
+  }
+  .row .band-label {
+    font: 400 12px/1 var(--mono);
+    color: var(--ink-2);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .bars { display: flex; flex-direction: column; gap: 3px; }
+  .bar { display: flex; align-items: center; gap: 8px; height: 15px; }
+  .bar i {
+    display: block;
+    height: 100%;
+    min-width: 1px;
+    border-radius: 1px;
+  }
+  .bar b {
+    font: 400 11px/1 var(--mono);
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+  .bar.a i { background: var(--bad); }
+  .bar.b i { background: var(--copper); }
+  .bar.c i { background: var(--good); }
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin: 14px 0 0;
+    font: 400 12px/1.4 var(--sans);
+    color: var(--ink-2);
+  }
+  .legend span { display: flex; align-items: center; gap: 6px; }
+  .legend i { width: 11px; height: 11px; display: block; border-radius: 1px; }
+
+  /* Callouts -------------------------------------------------------------- */
+  .note {
+    background: var(--sunken);
+    border-left: 2px solid var(--copper);
+    padding: 15px 18px;
+    margin: 0 0 16px;
+  }
+  .note p { margin: 0; max-width: none; font-size: 15px; }
+  .note p + p { margin-top: 10px; }
+
+  .done {
+    display: inline-block;
+    font: 500 10px/1 var(--sans);
+    letter-spacing: .11em;
+    text-transform: uppercase;
+    color: var(--surface);
+    background: var(--good);
+    padding: 4px 7px;
+    vertical-align: middle;
+    margin-left: 8px;
+  }
+
+  ol.order { counter-reset: step; list-style: none; padding: 0; margin: 0; }
+  ol.order li {
+    counter-increment: step;
+    display: grid;
+    grid-template-columns: 26px 1fr;
+    gap: 14px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--rule);
+    max-width: 66ch;
+  }
+  ol.order li::before {
+    content: counter(step);
+    font: 500 13px/1.5 var(--mono);
+    color: var(--copper);
+  }
+  ol.order li:last-child { border-bottom: none; }
+
+  footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid var(--rule);
+    font: 400 13px/1.6 var(--sans);
+    color: var(--ink-3);
+    max-width: 66ch;
+  }
+  @media (max-width: 620px) {
+    h1 { font-size: 31px; }
+    .page { padding: 40px 20px 72px; }
+  }
+</style>
+
+<div class="page">
+
+  <header class="masthead">
+    <div class="eyebrow">Model V6.2 &middot; PCB instance segmentation &middot; 8 September 2026</div>
+    <h1>From Benchmark to Board</h1>
+    <p class="standfirst">
+      The YOLO comparison is settled and the win is real. But 16 real boards
+      show the model is not usable at its default settings &mdash; and the
+      reason is not accuracy. This is what was measured, what was fixed today,
+      and what remains.
+    </p>
+    <dl class="facts">
+      <div class="fact"><dt>Test mAP50-95</dt><dd>0.7711</dd></div>
+      <div class="fact"><dt>Lead over YOLO</dt><dd>+0.0480</dd></div>
+      <div class="fact"><dt>Parameters</dt><dd>6.42 M</dd></div>
+      <div class="fact"><dt>Bootstrap draws V6.2 led</dt><dd>1000 / 1000</dd></div>
+    </dl>
+  </header>
+
+  <section>
+    <h2>What is already settled</h2>
+    <p>
+      Both models were scored on the same 432 test images, through one metric
+      implementation, with 1,000 paired bootstrap draws. The capture was
+      verified to reproduce the published pipeline number to zero drift before
+      any interval was computed.
+    </p>
+    <div class="scroll">
+      <table>
+        <caption>Mask AP on the untouched test split. Brackets are 95% intervals.</caption>
+        <thead>
+          <tr><th>&nbsp;</th><th>mAP50-95</th><th>mAP50</th><th>mAP75</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Model V6.2</td>
+            <td>0.7711 <span class="ci">[.7664&ndash;.7762]</span></td>
+            <td>0.9902 <span class="ci">[.9895&ndash;.9909]</span></td>
+            <td>0.8812 <span class="ci">[.8738&ndash;.8889]</span></td>
+          </tr>
+          <tr>
+            <td>YOLO11l-seg</td>
+            <td>0.7231 <span class="ci">[.7189&ndash;.7270]</span></td>
+            <td>0.9882 <span class="ci">[.9844&ndash;.9907]</span></td>
+            <td>0.8504 <span class="ci">[.8421&ndash;.8585]</span></td>
+          </tr>
+          <tr class="total">
+            <td>difference</td>
+            <td class="win">+0.0480 <span class="ci">[+.0438&ndash;+.0526]</span></td>
+            <td class="flat">+0.0020 <span class="ci">[&minus;.0005&ndash;+.0060]</span></td>
+            <td class="win">+0.0307 <span class="ci">[+.0221&ndash;+.0405]</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note">
+      <p>
+        <strong>Two corrections travel with this number.</strong> The lead is
+        <strong>+0.048, not the +0.10</strong> in the existing report &mdash;
+        that figure compared a mid-training V6.2 against a YOLO stopped at
+        epoch 23 of 300. And <strong>mAP50 is a statistical tie</strong>: its
+        interval includes zero, so at the detection threshold the two models
+        are indistinguishable.
+      </p>
+      <p>
+        That tie is the most useful thing in the table. V6.2&rsquo;s entire
+        advantage is mask <em>geometry</em>, not detection &mdash; exactly what
+        the architecture argument predicted, since low-rank prototype masks and
+        box-cropped masks both bite at high IoU and vanish at IoU 0.50.
+      </p>
+      <p>
+        <strong>And +0.048 may itself be generous.</strong> The Tier&nbsp;4
+        repair below found that the ground truth these numbers were measured
+        against was damaged in a way that favoured V6.2: Ultralytics paints
+        smallest-last, so YOLO always trained on the correct nesting, while a
+        YOLO correctly predicting a hole was scored against a solid mask. The
+        re-run is parked until V6.2 is retrained on repaired targets &mdash;
+        scoring the current weights against repaired ground truth would charge
+        V6.2 for a defect the repair just fixed. This is the second published
+        figure this work has revised downward today; both revisions came from
+        measuring something that had been assumed.
+      </p>
+      <p>
+        <strong>One caveat runs the other way, and belongs here for exactly the
+        same reason.</strong> A controlled rotation sweep &mdash; two boards,
+        seven angles, scale held fixed &mdash; found V6.2&rsquo;s median
+        detection confidence varies by <strong>0.044</strong> across
+        orientations while YOLO&rsquo;s varies by <strong>0.886</strong> and
+        drops below 0.5 on four of fourteen angle/board pairs. YOLO trains at
+        <code>degrees=0.0</code> and never sees a rotated pad; V6.2&rsquo;s
+        cycle sweeps 45 rotations. Step&nbsp;7 scored whatever orientation the
+        test split happens to carry.
+      </p>
+      <p>
+        Held at the strength the evidence supports: that is
+        <em>confidence</em>, not accuracy, on two unlabelled boards, and
+        YOLO&rsquo;s collapses are erratic rather than a clean penalty at
+        45&deg;. Step&nbsp;7 ranks detections from <code>conf=0.001</code> and
+        mask AP is rank-based, so a uniform confidence drop would barely move it
+        &mdash; only a <em>selective</em> one would. This is a reason to measure
+        the test split at several rotations, not a correction to apply to
+        +0.048.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <h2>What the real boards showed</h2>
+    <p>
+      Sixteen 1536&times;1024 production images where the model was reported as
+      failing. With no labels there is no precision to quote, so the honest
+      signal is the detection-score distribution: a healthy run puts detections
+      at 0.8&ndash;1.0 and leaves the low bands empty. It did not.
+    </p>
+
+    <div class="chart">
+      <div class="row">
+        <div class="band-label">0.0&ndash;0.2</div>
+        <div class="bars">
+          <div class="bar a"><i style="width:17.4%"></i><b>101</b></div>
+          <div class="bar b"><i style="width:12.4%"></i><b>72</b></div>
+          <div class="bar c"><i style="width:0.2%"></i><b>0</b></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="band-label">0.2&ndash;0.4</div>
+        <div class="bars">
+          <div class="bar a"><i style="width:100%"></i><b>581</b></div>
+          <div class="bar b"><i style="width:2.2%"></i><b>13</b></div>
+          <div class="bar c"><i style="width:0.2%"></i><b>0</b></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="band-label">0.4&ndash;0.6</div>
+        <div class="bars">
+          <div class="bar a"><i style="width:35.3%"></i><b>205</b></div>
+          <div class="bar b"><i style="width:3.4%"></i><b>20</b></div>
+          <div class="bar c"><i style="width:2.6%"></i><b>15</b></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="band-label">0.6&ndash;0.8</div>
+        <div class="bars">
+          <div class="bar a"><i style="width:15.7%"></i><b>91</b></div>
+          <div class="bar b"><i style="width:17.7%"></i><b>103</b></div>
+          <div class="bar c"><i style="width:17.7%"></i><b>103</b></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="band-label">0.8&ndash;1.0</div>
+        <div class="bars">
+          <div class="bar a"><i style="width:16.5%"></i><b>96</b></div>
+          <div class="bar b"><i style="width:15.7%"></i><b>91</b></div>
+          <div class="bar c"><i style="width:15.7%"></i><b>91</b></div>
+        </div>
+      </div>
+      <div class="legend">
+        <span><i style="background:var(--bad)"></i>shipped thresholds &mdash; 1,074 detections</span>
+        <span><i style="background:var(--copper)"></i>+ fitted thresholds &mdash; 299</span>
+        <span><i style="background:var(--good)"></i>+ confidence floor &mdash; 209</span>
+      </div>
+    </div>
+
+    <h3>Failure one &mdash; phantom duplicates</h3>
+    <p>
+      54% of all detections sat in the 0.2&ndash;0.4 band, and they were
+      duplicates: a spurious low-confidence <code>Rectangle</code> laid on top
+      of pads already found correctly. The class mix read 80.4% Rectangle
+      against 39.7% in the training data. <code>CENTER_CONFIDENCE_THRESHOLD =
+      0.10</code> was admitting weak spurious centre peaks as instances. On a
+      labelled benchmark that costs almost nothing, because mask AP is
+      rank-aware and they sort to the bottom &mdash; on a real board there is
+      no ranking to hide behind, and every one is drawn on the picture.
+    </p>
+
+    <h3>Failure two &mdash; large objects shatter</h3>
+    <p>
+      On the zoomed-in images a single pad becomes seven detections with the
+      mask carved into vertical strips. That is offset-based grouping failing:
+      every pixel predicts a vector to its object&rsquo;s centre, and for a
+      130&nbsp;px object those vectors are far longer than the head was ever
+      trained to emit. Thresholds do not touch this one.
+    </p>
+
+    <div class="scroll">
+      <table>
+        <caption>
+          Detected object scale in the 512 letterboxed frame, against the
+          training medians from the dataset audit.
+        </caption>
+        <thead>
+          <tr>
+            <th>class</th><th>n</th><th>p50</th><th>max</th>
+            <th>train p50</th><th>past ceiling</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Rectangle</td><td>136</td><td>47.9</td><td>140.8</td><td>35.7</td><td class="loss">30.1%</td></tr>
+          <tr><td>Rectangle_concave</td><td>31</td><td>47.9</td><td>180.8</td><td>&mdash;</td><td>&mdash;</td></tr>
+          <tr><td>circle_full</td><td>69</td><td>26.0</td><td>70.1</td><td>21.0</td><td class="flat">10.1%</td></tr>
+          <tr><td>circle</td><td>63</td><td>32.9</td><td>68.7</td><td>33.8</td><td class="win">4.8%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      <code>EXTRA_ZOOM_RANGE = (1.06, 1.12)</code>, so with zoom-to-fill the
+      widest object training ever produced was about 1.7&times; labelled scale.
+      Nearly a third of Rectangles in these images fall outside that window
+      &mdash; and that last column orders the classes exactly as the overlays
+      do. Rectangle shattered; circle, at 4.8%, stayed clean.
+    </p>
+    <p>
+      One further measurement: these 3:2 sources letterbox to 512&times;341
+      inside a 512&sup2; frame, so <strong>33.4% of every forward pass is grey
+      padding</strong>. That is a third of the compute spent on nothing, and it
+      shrinks every object by 1.5&times; before the model sees it.
+    </p>
+  </section>
+
+  <section>
+    <div class="band">
+      <span class="tier free">Tier 0</span>
+      <h2>Ship the deployment operating point<span class="done">Applied</span></h2>
+      <span class="cost">No retraining</span>
+    </div>
+    <p>
+      A better threshold set was already found on 5 September and survived a
+      held-out half of validation, but nothing outside <code>reevaluate.py</code>
+      ever applied it &mdash; every prediction run still used values inherited
+      from Model V5. <code>deployment.py</code> now carries that profile, and
+      both prediction entry points use it.
+    </p>
+    <p>
+      A confidence floor of 0.50 follows it, because centre-less fallback
+      recoveries score <code>FALLBACK_INSTANCE_SCORE = 0.05</code> and survive
+      thresholds that act on centre evidence they do not have. Together:
+      <strong>1,074 detections down to 209, with all 194 confident detections
+      untouched</strong>, and both low bands empty for the first time.
+    </p>
+    <div class="note">
+      <p>
+        <strong>This is not simply the better configuration.</strong> On the
+        labelled test split these thresholds score marginally <em>worse</em>
+        &mdash; mAP50-95 0.7711 &rarr; 0.7694 &mdash; because they buy precision
+        with recall. Same model, genuinely different right answer for the two
+        jobs. The benchmark defaults in <code>model_v6_2.py</code> are
+        unchanged and <code>DEPLOYMENT_MIN_CONFIDENCE</code> is 0.0 there, so
+        every published number stays reproducible.
+      </p>
+    </div>
+    <p>
+      <strong>Those 16 boards are a worst case, not a typical one</strong>, and
+      the distinction matters before this number is quoted. They were supplied
+      as boards the model was failing on, so a 54% duplicate rate is what a
+      curated failure set looks like. On 40 images sampled from a different lot,
+      V6.2 puts <strong>2.7%</strong> of detections below 0.2 and 73.5% above
+      0.8, and the deployment profile removes almost nothing &mdash; 536
+      detections become 534, against <span class="m">1,074&nbsp;&rarr;&nbsp;209</span>
+      on the failure set.
+    </p>
+    <p>
+      That does not argue against shipping it: the profile costs nothing when
+      there is nothing to remove, and it rescues the boards where the model is
+      unusable. It does mean the honest claim is <em>&ldquo;fixes the bad
+      boards&rdquo;</em> rather than <em>&ldquo;removes 81% of false
+      detections&rdquo;</em>, which was one set generalised into a headline.
+    </p>
+  </section>
+
+  <section>
+    <div class="band">
+      <span class="tier">Tier 1</span>
+      <h2>Widen the training scale range</h2>
+      <span class="cost">~3 days &middot; retrain</span>
+    </div>
+    <p>
+      Change <code>EXTRA_ZOOM_RANGE</code> from <code>(1.06, 1.12)</code> to
+      roughly <code>(1.0, 3.0)</code>, keeping the zoom-out ladder. Training
+      then spans about 0.5&times;&ndash;3&times; instead of
+      0.5&times;&ndash;1.7&times;.
+    </p>
+    <p>
+      This is the highest-value training change available because it hits three
+      problems at once: the fragmentation above, the known train&rarr;test scale
+      shift where test objects are 0.48&ndash;0.76&times; training size, and the
+      <code>circle</code> class that collapses at 16&nbsp;px. It is a small
+      change carried by one retrain.
+    </p>
+  </section>
+
+  <section>
+    <div class="band">
+      <span class="tier">Tier 2</span>
+      <h2>Replace the grouping, restore the resolution</h2>
+      <span class="cost">~3 days &middot; same retrain</span>
+    </div>
+    <p>
+      <strong>Distance-transform watershed.</strong> Swap the two-channel offset
+      vector field for one channel of per-instance-normalised inner distance.
+      That field is scale-free by construction &mdash; it cannot fail the way
+      offsets fail on a 130&nbsp;px object. It also frees 22.6% of all MACs and
+      deletes the fallback path that mints the 0.05-score fragments.
+    </p>
+    <p>
+      <strong>Full-resolution decoders.</strong> The opposite end of the same
+      problem: a 16&nbsp;px annulus has a ring under two pixels wide at the
+      current 256&sup2; head resolution, which is where <code>circle</code>
+      AP50-95 0.5630 comes from. The grouping change frees the compute the
+      resolution change needs, so the two are one job and not two.
+    </p>
+    <div class="note">
+      <p>
+        <strong>Two independent confirmations that these are one job.</strong>
+        The grouping failure reproduces on a different lot: on an image
+        carrying a long diagonal copper strip, V6.2 shatters it into pieces
+        with ragged edges and an interior hole while YOLO &mdash; which has no
+        offset field &mdash; returns it as a single clean mask. That is the
+        same defect the 16 failure boards show, on a different set and against
+        a model that cannot exhibit it.
+      </p>
+      <p>
+        And the replacement grouping has now been built and tested against
+        ground truth ahead of the retrain. It reproduces every synthetic scene
+        at IoU 1.000 &mdash; including a 130&nbsp;px object beside a
+        16&nbsp;px one, the pairing the offset field could not span &mdash; and
+        survives realistic prediction noise on compact objects. It does
+        <em>not</em> survive it on a thin annulus, because at 256&sup2; that
+        ring&rsquo;s core is a sub-pixel-wide dotted line and no threshold
+        recovers information the resolution never carried. <strong>Replacing
+        the grouping will not fix <code>circle</code> on its own &mdash; it
+        needs the resolution alongside it.</strong> That is now measured rather
+        than argued from the memory budget.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="band">
+      <span class="tier">Tier 3</span>
+      <h2>Stop letterboxing to a square</h2>
+      <span class="cost">Efficiency &amp; precision</span>
+    </div>
+    <p>
+      A 3:2 source in a square frame wastes 33.4% of every forward pass. A 3:2
+      input tensor &mdash; 768&times;512 &mdash; or tiling reclaims that compute
+      <em>and</em> makes every object 1.5&times; larger in the model&rsquo;s
+      frame, which improves precision on exactly the small objects that dominate
+      the remaining loss. It is the rare change that makes the model both faster
+      and more accurate. Inference is currently 5.4&nbsp;s/image, most of it
+      CPU-side instance grouping; Tier 2 and Tier 3 attack both halves.
+    </p>
+  </section>
+
+  <section>
+    <div class="band">
+      <span class="tier data">Tier 4</span>
+      <h2>The data ceiling<span class="done">Applied</span></h2>
+      <span class="cost">Repaired &middot; 1.6 min</span>
+    </div>
+    <p>
+      The expected cause was duplicate polygons. Measuring first said otherwise:
+      on test, <strong>nesting is 98.3% of the shared pixels</strong> and there
+      are no duplicates at all. Every one of the 36 nested pairs is the same
+      convention &mdash; a small <code>Rectangle</code> inside a
+      <code>Rectangle_concave</code> at a 3.5&ndash;3.8% area ratio. Under
+      file-order painting whichever polygon came last won, so some pairs ended
+      with the concave solid and its inner Rectangle erased, and others with
+      the concave annular; 16 instances were lost outright. <strong>The same
+      physical configuration was labelled two ways depending on serialisation
+      order</strong>, and that inconsistency is the real damage, not the 16
+      erasures alone.
+    </p>
+    <p>
+      <code>rasterize_instances</code> now resolves contested pixels explicitly
+      instead of letting file order decide. Verified across the full test split:
+      33,488 polygons in, 33,488 instances out, <strong>zero destroyed</strong>,
+      and <strong>zero order-dependent images</strong> under a reversed-order
+      control &mdash; which tests the defect rather than its symptom. Repaired
+      arrays live in a new directory so the arrays behind the published figure
+      stay byte-intact.
+    </p>
+    <div class="note">
+      <p>
+        <strong>A prediction, stated before the retrain so it can be
+        falsified.</strong> <code>Rectangle_concave</code> is the rarest class
+        &mdash; 680 training polygons, 0.47% &mdash; and the audit calls it the
+        structural limit needing more labels. But part of that weakness was
+        never a data-volume problem: those 680 polygons were rasterised
+        inconsistently, so the model was asked to learn a contradiction on
+        precisely the class with the least evidence to resolve it. Consistent
+        targets are worth disproportionately more at 680 polygons than at
+        76,612. <strong>If the retrain moves one class further than the rest,
+        it should be this one.</strong>
+      </p>
+      <p>
+        Bounded, so the prediction can actually fail: train carries 64 nested
+        pairs, which is <strong>9.4% of the 680</strong>. Real, but not most of
+        the class &mdash; so the claim is that Rectangle_concave moves further
+        than the other three, not that it is transformed. If it moves by less
+        than the noise between checkpoints, the claim is simply wrong.
+      </p>
+    </div>
+    <p>
+      What the repair cannot fix is volume. Large and rare remains the hard
+      combination, and no architecture change substitutes for labels &mdash; it
+      is now a smaller problem than the audit implied, not an absent one.
+    </p>
+  </section>
+
+  <section>
+    <h2>Order of work</h2>
+    <ol class="order">
+      <li><strong>Tier 0 &mdash; done.</strong> Free, immediate, and verified on the 16 boards.</li>
+      <li><strong>Tier 4 &mdash; done.</strong> Repaired targets are prepared and waiting; the retrain no longer trains on a contradiction.</li>
+      <li><strong>Tiers 1, 2 and 3 as a single retrain.</strong> They need the same ~3-day run and their benefits compound: a wider scale range needs grouping that survives it, and both want the resolution Tier 3 hands back.</li>
+      <li><strong>Re-run step 7 afterwards, not before.</strong> The harness exists and takes about 90 minutes. Running it on repaired ground truth with the current weights would measure the old defect, not the model.</li>
+      <li><strong>Add a rotation sweep to that re-run.</strong> Score the labelled test split at several angles rather than only the orientation it happens to carry. That turns the two-board confidence finding into an interval, and it costs one extra pass of a harness that already exists.</li>
+    </ol>
+    <p style="margin-top:22px">
+      The YOLO result holds &mdash; an interval that excludes zero, ahead in
+      every one of 1,000 draws. What has changed today is confidence in its
+      <em>size</em>: +0.10 became +0.048, and +0.048 now carries a known bias in
+      V6.2&rsquo;s favour that only the retrain can settle. The direction of the
+      claim has survived every measurement; its magnitude has shrunk under each
+      one.
+    </p>
+  </section>
+
+  <footer>
+    Model V6.2 &middot; 6,417,683 parameters, trained from random initialisation
+    on 4,680 images; no pretrained weights. Comparison figures measured on the
+    complete 432-image test split under one metric implementation with 1,000
+    paired bootstrap draws. Real-board figures measured on 16 unlabelled
+    1536&times;1024 production images.
+  </footer>
+
+</div>
